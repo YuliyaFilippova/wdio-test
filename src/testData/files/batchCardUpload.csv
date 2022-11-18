@@ -1,0 +1,5 @@
+﻿"BalancePlatform Received Payments as at,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"10 January 2022,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Payments,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Balance Platform,Account Holder,Balance Account,Transaction Id,Journal Type,Authorisation PSP Reference,Payment Instrument Type,Payment Reference,Authorisation Date,Authorisation TimeZone,Transaction Date,Transaction TimeZone,Original Currency,Original Amount,Instructed Currency,Instructed Amount,Description,Entrymode,Auth Code,Shopper Interaction,Counterparty Name,Counterparty Address,Counterparty City,Counterparty Country,MCC,Counterparty iban,Counterparty bic,Counterparty Account Number,Beneficiary Balance Account,Reserved2,Reserved3,Reserved4,Reserved5,Reserved6,Reserved7,Reserved8,Reserved9,Reserved10",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Centtrip,AH3227C223222B5F4DFS98ZCW,BA3227C223222B5F4DHB58ZGM,002750216302,OutgoingTransfer,,,,2022-01-10 09:18:30,UTC,2022-01-10 09:18:30,UTC,USD,-20,USD,-20,Transfer to Frida Kalo,,,,,,,,,,,,,,,,,,,,,

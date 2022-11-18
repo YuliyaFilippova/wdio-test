@@ -1,0 +1,55 @@
+pipeline {
+    agent none
+    environment {
+        HOME = '$WORKSPACE'
+        DEFAULT_JVM_OPTS = '-Xmx1G'
+    }
+    stages {
+        stage('Delete old data') {     
+            agent {label 'master' }
+            steps {
+                sh 'rm -rf $WORKSPACE/allure-results'
+            }
+        }
+
+        stage('Run tests') {
+            agent {
+                docker {
+                    image 'atlassianlabs/docker-node-jdk-chrome-firefox:2022-03-07'
+                }
+            } 
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh 'npm install'
+                    sh 'rm -rf allure-results/*'
+                    sh 'rm run clean'
+                    script{
+                        try {
+                            sh "npm run iFacade"
+                        } catch (error) {
+                            throw error
+                        } finally {
+                            stash name: 'allure-results', includes: 'allure-results/*'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build report') {
+            agent {label 'master' }
+            steps {
+                unstash 'allure-results'
+                script {
+                    allure([
+                        includeProperties: false,
+                        jdk: '',
+                        properties: [],
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: 'allure-results']]
+                    ])
+                }
+            }
+        }
+    }
+}
