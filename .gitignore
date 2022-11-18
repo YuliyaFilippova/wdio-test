@@ -1,0 +1,6 @@
+/node_modules
+/allure-report
+/allure-results
+/driver-logs
+/src/tmp/*
+*.log
