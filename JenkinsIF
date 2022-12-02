@@ -6,7 +6,7 @@ pipeline {
     }
     stages {
         stage('Delete old data') {     
-            agent {label 'master' }
+            agent {label 'main' }
             steps {
                 sh 'rm -rf $WORKSPACE/allure-results'
             }
@@ -37,7 +37,7 @@ pipeline {
         }
 
         stage('Build report') {
-            agent {label 'master' }
+            agent {label 'main' }
             steps {
                 unstash 'allure-results'
                 script {
