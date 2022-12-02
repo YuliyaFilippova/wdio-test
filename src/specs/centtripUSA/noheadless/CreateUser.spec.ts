@@ -18,13 +18,13 @@ import {
   verificationWindowElements, signUpUSAPageElements
 } from '../../../core/pages/locators';
 import { Other } from '../../../core/utils/other';
-import { connection, connectionUSA } from "../../../wdio.conf";
 import { roles } from '../../../testData/other';
 import { NewBrowserTab } from '../../../core/utils/newBrowserTab';
 import { CommonPageUSA } from '../../../core/pages/centtripUSA/commonUSA';
 import { UsersPage } from '../../../core/pages/centtripUSA/usersPage';
 import { RandomGenerator } from '../../../core/utils/randomGenerator';
 import { URLs } from '../../../urls';
+import ping from '../../../connections'
 
 const commonPageUSA = new CommonPageUSA();
 const signInPage = new SignInPage();
@@ -40,11 +40,11 @@ describe(`Users > Create a user`, () => {
   let phoneNumber;
 
   before(async () => {
-    if (!connectionUSA._connectCalled) {
-      await connectionUSA.connect();
+    if (!ping.connectionUSA._connectCalled) {
+      await ping.connectionUSA.connect();
     }
-    if (!connection._connectCalled) {
-      await connection.connect();
+    if (!ping.connection._connectCalled) {
+      await ping.connection.connect();
     }
   });
 
@@ -81,7 +81,7 @@ describe(`Users > Create a user`, () => {
     allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/11380');
     await mailMainPage.verifyEmailByAPI(await randEmail11380);
     await browser.pause(2000);
-    await NewBrowserTab.closeCurrentTabAndSwitchToFirstTab(0, 1);
+    await NewBrowserTab.closeFromTabAndSwitchToTab(0, 1);
     await (await signUpUSAPageElements.createPassword.passField).waitForDisplayed();
     await browser.pause(1000);
     await signUpPage.setPasswordForNewUserUsa();
@@ -89,7 +89,7 @@ describe(`Users > Create a user`, () => {
     await signInPage.signInAsRegisteredUserUSA(await randEmail11380, Credentials.CenttripAdmin.Password);
     await Actions.waitAndClick(await verificationWindowElements.verifyByEmailButton);
     const verCode = await mailMainPage.getVerificationCodeByAPI(await randEmail11380);
-    await NewBrowserTab.closeCurrentTabAndSwitchToFirstTab(1, 0);
+    await NewBrowserTab.closeFromTabAndSwitchToTab(1, 0);
     await (await verificationWindowElements.verifyCodeField).addValue(verCode);
     await Actions.waitAndClick(await verificationWindowElements.submitButton);
     await Actions.waitAndClick(await USAMainPageElements.navigationMenu('Users'));
@@ -103,7 +103,7 @@ describe(`Users > Create a user`, () => {
     await mailMainPage.verifyEmailByAPI(randEmail11378);
     // await mailMainPage.verifyEmail(randEmail11378);
     await browser.pause(2000);
-    await NewBrowserTab.closeCurrentTabAndSwitchToFirstTab(0, 1);
+    await NewBrowserTab.closeFromTabAndSwitchToTab(0, 1);
     await browser.pause(2000);
     await (await congratulationsWindowElements.congratWindow).waitForDisplayed();
 

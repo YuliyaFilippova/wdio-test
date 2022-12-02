@@ -229,7 +229,7 @@ export class DashboardPage {
       await Actions.waitAndClick(await general.buttonByName('Confirm'));
       await (await dashboardPageElements.transferSucessModal).waitForDisplayed();
     } catch {
-      await Actions.waitAndClick(await general.spanByNameNum('Confirm', 3));
+      await Actions.waitAndClick(await general.buttonByNameNum('Confirm', 3));
       await (await dashboardPageElements.transferSucessModal).waitForDisplayed();
     }
     await Actions.waitAndClick(await dashboardPageElements.modalCloseButton);

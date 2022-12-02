@@ -43,7 +43,7 @@ export class SignInPage {
     AllureReporter.startStep(`Sign in via ${email} mail confirmation`);
     await Actions.waitAndClick(await verificationWindowElements.verifyByEmailButton);
     const verCode = await mailMainPage.getVerificationCodeByAPI(email);
-    await NewBrowserTab.closeCurrentTabAndSwitchToFirstTab(1, 0);
+    await NewBrowserTab.closeFromTabAndSwitchToTab(1, 0);
     await (await verificationWindowElements.verifyCodeField).addValue(verCode);
     await Actions.waitAndClick(await verificationWindowElements.submitButton);
     AllureReporter.endStep();
@@ -67,6 +67,23 @@ export class SignInPage {
       (await signInPageElements.signInWindow).waitForDisplayed();
       await this.signInAsRegisteredUserUK(email, password);
     };
+    AllureReporter.endStep();
+  };
+
+  async signInAsActivatedUser(email: string, password: string): Promise<void> {
+    AllureReporter.startStep(`Sign in as activated user with ${email} mail`);
+    await (await signInPageElements.emailField).waitForClickable();
+    await (await signInPageElements.emailField).setValue(email);
+    await (await signInPageElements.passwordField).setValue(password);
+    await Actions.waitAndClick(await signInPageElements.signInButton);
+    try {
+      await (await UKGeneralElements.multiFactorAuth).waitForDisplayed();
+      console.log('MFA page');
+    }
+    catch {
+      console.log('MFA page is not found');
+      await (await UKGeneralElements.multiFactorAuth).waitForDisplayed();
+    }
     AllureReporter.endStep();
   };
 };

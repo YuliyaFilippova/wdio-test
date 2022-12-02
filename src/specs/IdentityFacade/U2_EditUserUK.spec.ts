@@ -8,13 +8,13 @@ import { Salesforce } from '../../core/pages/externalServices/salesforce';
 import { general, signInPageElements, UKCardMigrationPageElements, UKCreateUserPageElements, UKGeneralElements } from '../../core/pages/locators';
 import { Actions } from '../../core/utils/actions';
 import { Other } from '../../core/utils/other';
-import { env, URLs } from '../../urls';
+import { URLs } from '../../urls';
 import AllureReporter from '@wdio/allure-reporter';
-import { CredentialsIF, pathToUploadPfsCardCreation, UserIF } from '../../testData/usersData';
+import userDataIF, { Password, pathToUploadPfsCardCreation, UserIF } from '../../testData/usersData';
 import { userDataInDB } from '../../core/pages/userDataInDB';
-import { connection } from '../../wdio.conf';
+import ping from '../../connections';
 
-describe(`Identity Facade >> Update UK users`, () => {
+describe(`Identity Facade >> U2 - Update UK users`, () => {
 
     const emailsuperAdminUKEdit = RandomGenerator.generateRandEmail('_csa_uk_2.1@harakirimail.com');
     const emailCorpAdminEdit = RandomGenerator.generateRandEmail('_ca_uk_2.2@harakirimail.com');
@@ -54,8 +54,8 @@ describe(`Identity Facade >> Update UK users`, () => {
     };
 
     before(async () => {
-        if (!connection._connectCalled) {
-            await connection.connect();
+        if (!ping.connection._connectCalled) {
+            await ping.connection.connect();
         }
     });
 
@@ -76,17 +76,17 @@ describe(`Identity Facade >> Update UK users`, () => {
         console.log('U2.1 - ', await emailsuperAdminUKEdit);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('superAdmin', await emailsuperAdminUKEdit, UserIF.accountUK, UserIF.superAdminUK.title, UserIF.superAdminUK.gender,
+        await createUserPageUK.createAdminUK('superAdmin', await emailsuperAdminUKEdit, userDataIF.accountUK, UserIF.superAdminUK.title, UserIF.superAdminUK.gender,
             UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.postalCode, UserIF.superAdminUK.address1, UserIF.superAdminUK.address2,
             UserIF.superAdminUK.city, 'United States', UserIF.phoneCodeUSA, UserIF.phoneCodeUSA, UserIF.superAdminUK.phoneNumber, UserIF.superAdminUK.homeNumber,
             UserIF.superAdminUK.dob);
         await commonPageUK.logoutFromUK();
         await browser.url(URLs.UKPortalURL);
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.updateUserUK(await emailsuperAdminUKEdit, UserIF.accountUK, superAdminUKEdit.title, superAdminUKEdit.gender,
+        await createUserPageUK.updateUserUK(await emailsuperAdminUKEdit, userDataIF.accountUK, superAdminUKEdit.title, superAdminUKEdit.gender,
             superAdminUKEdit.firstName, superAdminUKEdit.lastName, superAdminUKEdit.postalCode, superAdminUKEdit.address1, superAdminUKEdit.address2, superAdminUKEdit.city,
             UserIF.countryUK, UserIF.phoneCodeUK, UserIF.phoneCodeUK, superAdminUKEdit.phoneNumber, superAdminUKEdit.homeNumber, superAdminUKEdit.dob, true);
         await userDataInDB.userExistsAspNetUsersDB(await emailsuperAdminUKEdit, superAdminUKEdit.firstName, superAdminUKEdit.lastName, superAdminUKEdit.dobDB,
@@ -103,7 +103,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             `+44${superAdminUKEdit.phoneNumber}`, null, addressArray);
     });
 
-    it(`[C22133] UK Super Admin - Edit UStoUK country: DynamoDb @smoke`, async () => {
+    xit(`[C22133] UK Super Admin - Edit UStoUK country: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.1 UK Super Admin - Edit UStoUK country');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22133');
@@ -140,18 +140,18 @@ describe(`Identity Facade >> Update UK users`, () => {
         console.log('U2.2 - ', await emailCorpAdminEdit);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailCorpAdminEdit, UserIF.accountUK, UserIF.corpAdminUK.title,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailCorpAdminEdit, userDataIF.accountUK, UserIF.corpAdminUK.title,
             UserIF.corpAdminUK.gender, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode,
             UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2, UserIF.corpAdminUK.city, UserIF.countryUK, UserIF.phoneCodeUK,
             UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber, UserIF.corpAdminUK.dob);
         await commonPageUK.logoutFromUK();
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.updateUserUK(await emailCorpAdminEdit, UserIF.accountUK, corporateAdminEdit.title, corporateAdminEdit.gender,
+        await createUserPageUK.updateUserUK(await emailCorpAdminEdit, userDataIF.accountUK, corporateAdminEdit.title, corporateAdminEdit.gender,
             corporateAdminEdit.firstName, corporateAdminEdit.lastName, corporateAdminEdit.postalCode, corporateAdminEdit.address1, corporateAdminEdit.address2,
             corporateAdminEdit.city, 'United States', UserIF.phoneCodeUSA, UserIF.phoneCodeUSA, corporateAdminEdit.phoneNumber, corporateAdminEdit.homeNumber,
             corporateAdminEdit.dob, true);
@@ -169,7 +169,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             corporateAdminEdit.dobDB, `+1${corporateAdminEdit.phoneNumber}`, null, addressArray);
     });
 
-    it(`[C22136] UK Corporate Admin - Edit UKtoUS country under Centtrip Admin: DynamoDb @smoke`, async () => {
+    xit(`[C22136] UK Corporate Admin - Edit UKtoUS country under Centtrip Admin: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.2 UK Corporate Admin - Edit UKtoUS country under Centtrip Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22136');
@@ -199,15 +199,15 @@ describe(`Identity Facade >> Update UK users`, () => {
 
     // --------------- U2.3 UK Cardholder - Modify under Centtrip Admin ------------------------------
 
-    it.only(`[C20823] UK Cardholder - Modify under Centtrip Admin: AspNetUsers @smoke`, async () => {
+    it(`[C20823] UK Cardholder - Modify under Centtrip Admin: AspNetUsers @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.3 UK Cardholder - Modify under Centtrip Admin ');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/20823');
         console.log('U2.3 - ', await emailCardholderEdit);
-        const fileName = await cardMigrationPage.generateBatchFile(await emailCardholderEdit, env);
+        const fileName = await cardMigrationPage.generateBatchFile(await emailCardholderEdit, process.env.env);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -219,7 +219,7 @@ describe(`Identity Facade >> Update UK users`, () => {
         // Modify under Centtrip Admin
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.switchToAnotherAccount(await emailCardholderEdit);
         await (await UKGeneralElements.settingsButton).moveTo();
         await Actions.waitAndClick(await general.linkByName('Modify Card Holder Details'));
@@ -229,7 +229,7 @@ describe(`Identity Facade >> Update UK users`, () => {
         await commonPageUK.logoutFromUK();
     }).timeout(8000000);
 
-    it.only(`[C22191] UK Cardholder - Modify under Centtrip Admin: UK identity @smoke`, async () => {
+    it(`[C22191] UK Cardholder - Modify under Centtrip Admin: UK identity @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.3 UK Cardholder - Modify under Centtrip Admin ');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22191');
@@ -238,7 +238,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             UserIF.cardholderUKEdit.dobDB, `+44${UserIF.cardholderUKEdit.phoneNumber}`, null, addressArray);
     });
 
-    it(`[C22195] UK Cardholder - Modify under Centtrip Admin: DynamoDb @smoke`, async () => {
+    xit(`[C22195] UK Cardholder - Modify under Centtrip Admin: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.3 UK Cardholder - Modify under Centtrip Admin ');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22195');
@@ -248,7 +248,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             `+44${UserIF.cardholderUKEdit.phoneNumber}`, `+44${UserIF.cardholderUKEdit.phoneNumber}`);
     });
 
-    it.only(`[C22198] UK Cardholder - Modify under Centtrip Admin: SalesForce @smoke`, async () => {
+    it(`[C22198] UK Cardholder - Modify under Centtrip Admin: SalesForce @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.3 UK Cardholder - Modify under Centtrip Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22198');
@@ -259,7 +259,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             UserIF.cardholderUK.city, UserIF.cardholderUK.postalCode, UserIF.countryUK, false, false);
     });
 
-    it.only(`[C30454] UK Cardholder - Modify under Centtrip Admin: Unique identity @smoke`, async () => {
+    it(`[C30454] UK Cardholder - Modify under Centtrip Admin: Unique identity @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.3 UK Cardholder - Modify under Centtrip Admin ');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30454');
@@ -276,10 +276,10 @@ describe(`Identity Facade >> Update UK users`, () => {
         AllureReporter.addStory('U2.4 UK Cardholder - Edit under Super Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37561');
         console.log('U2.4 - ', await emailCardholderEdit4);
-        const fileName = await cardMigrationPage.generateBatchFile(await emailCardholderEdit4, env);
+        const fileName = await cardMigrationPage.generateBatchFile(await emailCardholderEdit4, process.env.env);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -291,7 +291,7 @@ describe(`Identity Facade >> Update UK users`, () => {
         //Edit CH user under CSA
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.SuperAdminUK.Email, CredentialsIF.SuperAdminUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.SuperAdminUK, Password);
         await (await general.elementByText('Last')).scrollIntoView();
         await Actions.waitAndClick(await UKCreateUserPageElements.superAdmin.lastPageOfChs);
         await Actions.waitAndClick(await general.lastEditBtn);
@@ -311,7 +311,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             UserIF.cardholderUKEdit.dobDB, `+44${UserIF.cardholderUKEdit.phoneNumber}`, null, addressArray);
     });
 
-    it(`[C37563] UK Cardholder - Edit under Super Admin: DynamoDb @smoke`, async () => {
+    xit(`[C37563] UK Cardholder - Edit under Super Admin: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.4 UK Cardholder - Edit under Super Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37563');
@@ -352,9 +352,9 @@ describe(`Identity Facade >> Update UK users`, () => {
         // Create UK Admin 
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailAdminEdit5, UserIF.accountUK, UserIF.corpAdminUK.title,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailAdminEdit5, userDataIF.accountUK, UserIF.corpAdminUK.title,
             UserIF.corpAdminUK.gender, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode,
             UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2, UserIF.corpAdminUK.city, UserIF.countryUK,
             UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
@@ -362,10 +362,10 @@ describe(`Identity Facade >> Update UK users`, () => {
         await commonPageUK.logoutFromUK();
         await Other.deleteCacheCookiesUK();
         // Create UK Cardholder
-        const fileName = await cardMigrationPage.generateBatchFile(await emailAdminEdit5, env);
+        const fileName = await cardMigrationPage.generateBatchFile(await emailAdminEdit5, process.env.env);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -377,7 +377,7 @@ describe(`Identity Facade >> Update UK users`, () => {
         // Modify UK cardholder
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.switchToAnotherAccount(await emailAdminEdit5);
         await (await UKGeneralElements.settingsButton).moveTo();
         await Actions.waitAndClick(await general.linkByName('Modify Card Holder Details'));
@@ -397,7 +397,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             UserIF.cardholderUKEdit.dobDB, `+1${UserIF.cardholderUKEdit.phoneNumber}`, null, addressArray);
     });
 
-    it(`[C37797] UK Corporate Admin > UK Cardholder - Modify under Centtrip Admin: DynamoDb @smoke`, async () => {
+    xit(`[C37797] UK Corporate Admin > UK Cardholder - Modify under Centtrip Admin: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.5 UK Corporate Admin > UK Cardholder - Modify under Centtrip Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37797');
@@ -438,9 +438,9 @@ describe(`Identity Facade >> Update UK users`, () => {
         // Create Admin user 
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailCardholderEdit6, UserIF.accountUK, UserIF.corpAdminUK.title,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailCardholderEdit6, userDataIF.accountUK, UserIF.corpAdminUK.title,
             UserIF.corpAdminUK.gender, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode,
             UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2, UserIF.corpAdminUK.city, UserIF.countryUK,
             UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
@@ -448,10 +448,10 @@ describe(`Identity Facade >> Update UK users`, () => {
         await commonPageUK.logoutFromUK();
         await Other.deleteCacheCookiesUK();
         // Create CH user 
-        const fileName = await cardMigrationPage.generateBatchFile(await emailCardholderEdit6, env);
+        const fileName = await cardMigrationPage.generateBatchFile(await emailCardholderEdit6, process.env.env);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -463,7 +463,7 @@ describe(`Identity Facade >> Update UK users`, () => {
         //Edit CH user under CSA
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.SuperAdminUK.Email, CredentialsIF.SuperAdminUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.SuperAdminUK, Password);
         await (await general.elementByText('Last')).scrollIntoView();
         await Actions.waitAndClick(await UKCreateUserPageElements.superAdmin.lastPageOfChs);
         await Actions.waitAndClick(await general.lastEditBtn);
@@ -483,7 +483,7 @@ describe(`Identity Facade >> Update UK users`, () => {
             UserIF.cardholderUKEdit6.dobDB, `+44${UserIF.cardholderUKEdit6.phoneNumber}`, null, addressArray);
     });
 
-    it(`[C37803] UK Corporate Admin > UK Cardholder - Edit under Super Admin: DynamoDb @smoke`, async () => {
+    xit(`[C37803] UK Corporate Admin > UK Cardholder - Edit under Super Admin: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('U2.6 UK Corporate Admin > UK Cardholder - Edit under Super Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37803');

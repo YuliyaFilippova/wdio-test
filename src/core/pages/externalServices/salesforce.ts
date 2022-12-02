@@ -152,7 +152,7 @@ export class Salesforce {
     return data;
   };
 
-  public static async checkUserRoleInSalesforce(testEmail:string, expCorpAdminStatus: boolean,
+  public static async checkUserRoleInSalesforce(testEmail: string, expCorpAdminStatus: boolean,
     expCardholderStatus: boolean, expCorpSuperAdminStatus?: boolean) {
     let data: JSON;
     AllureReporter.startStep(`Check role in salesforce for ${testEmail} user`);
@@ -172,14 +172,14 @@ export class Salesforce {
       const isCorpSupAdmin = row.Corporate_Super_Admin__c;
       expect(isCardholder).toBe(expCardholderStatus);
       expect(isCorpAdmin).toBe(expCorpAdminStatus);
-      if(expCorpSuperAdminStatus !== undefined) {
+      if (expCorpSuperAdminStatus !== undefined) {
         expect(isCorpSupAdmin).toBe(expCorpSuperAdminStatus);
       };
     });
     AllureReporter.endStep();
   };
 
-  public static async getContactsByEmailAdminAndCardholder(email:string) {
+  public static async getContactsByEmailAdminAndCardholder(email: string) {
     let data: JSON;
     AllureReporter.startStep(`Get salesforce contact data by email`);
     const authData = await this.getToken();
@@ -196,45 +196,45 @@ export class Salesforce {
     console.log('Admin + Cardholder: ', data);
     AllureReporter.endStep();
     return data;
-  };  
+  };
 
-  public static async checkContactArrayInSalesforce(contactsData:JSON, expEmail:string, expRecordType:string, expFirstName:string, expLastName:string, 
-    expCurrency:string, expCardholderStatus:boolean, expCorpAdminStatus:boolean, expCorpSuperAdminStatus:boolean) {
+  public static async checkContactArrayInSalesforce(contactsData: JSON, expEmail: string, expRecordType: string, expFirstName: string, expLastName: string,
+    expCurrency: string, expCardholderStatus: boolean, expCorpAdminStatus: boolean, expCorpSuperAdminStatus: boolean) {
     AllureReporter.startStep(`Check Contact data in Salesforce`);
     let objArray = Object.entries(contactsData);
     objArray.forEach(([key, value]) => {
       if (key == 'RecordTypeId') {
         expect(contactsData[key]).toBe(expRecordType);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expRecordType}`);
-      } 
+      }
       if (key == 'Email') {
         expect(contactsData[key]).toBe(expEmail);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expEmail}`);
-      } 
+      }
       if (key == 'FirstName') {
         expect(contactsData[key]).toBe(expFirstName);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expFirstName}`);
-      } 
+      }
       if (key == 'LastName') {
         expect(contactsData[key]).toBe(expLastName);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expLastName}`);
-      } 
+      }
       if (key == 'Is_Cardholder__c') {
         expect(contactsData[key]).toBe(expCardholderStatus);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expCardholderStatus}`);
-      } 
+      }
       if (key == 'Corporate_Admin_User__c') {
         expect(contactsData[key]).toBe(expCorpAdminStatus);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expCorpAdminStatus}`);
-      } 
+      }
       if (key == 'Corporate_Super_Admin__c') {
         expect(contactsData[key]).toBe(expCorpSuperAdminStatus);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expCorpSuperAdminStatus}`);
-      } 
+      }
       if (key == 'CurrencyIsoCode') {
         expect(contactsData[key]).toBe(expCurrency);
         AllureReporter.addStep(`Expect ${contactsData[key]} is equal to ${expCurrency}`);
-      } 
+      }
     });
     AllureReporter.endStep();
   };
@@ -452,5 +452,28 @@ export class Salesforce {
     })
     AllureReporter.endStep();
     return refCC;
+  };
+
+  public static async checkPhoneNumberInSalesforce(contactsData: JSON, expEmail: string, expPhoneNum: string) {
+    AllureReporter.startStep(`Check contact data in Salesforce`);
+    console.log('contactsData: ', contactsData);
+    Object.keys(contactsData).forEach(function (keyItem) {
+      const row = contactsData[keyItem];
+      const email = row.Email;
+      const phone = row.Phone;
+      const mobile = row.MobilePhone;
+      expect(email).toBe(expEmail);
+      AllureReporter.addStep(`Expect email ${email} is equal to ${expEmail}`);
+      if (phone) {
+        expect(phone).toBe(expPhoneNum);
+        AllureReporter.addStep(`Expect mobile ${phone} is equal to ${expPhoneNum}`);
+      }
+      if (mobile) {
+        expect(mobile).toBe(expPhoneNum);
+        AllureReporter.addStep(`Expect mobile ${mobile} is equal to ${expPhoneNum}`);
+        
+      }
+    });
+    AllureReporter.endStep();
   };
 }

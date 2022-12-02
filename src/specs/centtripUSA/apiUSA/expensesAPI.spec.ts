@@ -19,9 +19,10 @@ describe(`API > Dashboard details`, () => {
       accessToken = await LoginAPICall.getAccessTokenForAPI('amir.csa.centtrip.qa@harakirimail.com', Credentials.CenttripAdminAPI.Password);
       const entityCodeRefId = '0e46a962-fd0b-466e-8a5b-346789e8252d';
       const endpoint = `api/card/v1/Entity/${entityCodeRefId}/CardTransactions/Paging`;
-      const bodyRequest = requestBody.expensesTransactions('28d3d55d-1122-47e5-a31b-6f2f7cec2436', '2022-09-22T13:45:08.892Z');
+      const bodyRequest = requestBody.expensesTransactions('28d3d55d-1122-47e5-a31b-6f2f7cec2436', `2022-09-22T13:45:08.892Z`);
       const expensesTransactions = await HttpMethods.post(endpoint, requestHeadersToken(accessToken), bodyRequest, URLs.USAPortalURL);
-      console.log(expensesTransactions.body.value.data);
+      expect(expensesTransactions.status).toBe(200);
+      expect(expensesTransactions.body.isSuccess).toEqual(true);
       expect(expensesTransactions.body.value.data[0].sharedBalance).toEqual(false);
       expect(expensesTransactions.body.value.data[0].cardCodeRefId).toEqual('28d3d55d-1122-47e5-a31b-6f2f7cec2436');
       expect(expensesTransactions.body.value.data[0].accountCodeRefId).toEqual('16e08988-c36c-4cd2-82eb-a905c8e90c5d');
@@ -49,13 +50,15 @@ describe(`API > Dashboard details`, () => {
 
     it(`[C38717] Expenses table: Declined card transaction @smoke`, async () => {
       allureReporter.addSeverity('critical');
-      allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/38715');
+      allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/38717');
       accessToken = await LoginAPICall.getAccessTokenForAPI(Credentials.CenttripAdminNew.Email, Credentials.CenttripAdminAPI.Password);
       const entityCodeRefId = '0e46a962-fd0b-466e-8a5b-346789e8252d';
       const endpoint = `api/card/v1/Entity/${entityCodeRefId}/CardTransactions/Paging`;
       const bodyRequest = requestBody.expensesTransactions('bbf0c3a7-701d-463a-a933-1dabddbdca27', '2022-09-22T10:31:17.842Z');
       const expensesTransactions = await HttpMethods.post(endpoint, requestHeadersToken(accessToken), bodyRequest, URLs.USAPortalURL);
       console.log(expensesTransactions.body.value.data);
+      expect(expensesTransactions.status).toBe(200);
+      expect(expensesTransactions.body.isSuccess).toEqual(true);
       expect(expensesTransactions.body.value.data[0].sharedBalance).toEqual(true);
       expect(expensesTransactions.body.value.data[0].cardCodeRefId).toEqual('bbf0c3a7-701d-463a-a933-1dabddbdca27');
       expect(expensesTransactions.body.value.data[0].accountCodeRefId).toEqual('f3f8913a-7918-e961-6d60-39dfe5e762a4');
@@ -89,7 +92,7 @@ describe(`API > Dashboard details`, () => {
       const endpoint = `api/card/v1/CardTransactions/${transactionRefId}/details`;
       const cardTransactoinsDetails = await HttpMethods.get(endpoint, requestHeadersToken(accessToken), URLs.USAPortalURL);
       expect(cardTransactoinsDetails.status).toBe(200);
-      console.log(cardTransactoinsDetails);
+      expect(cardTransactoinsDetails.body.isSuccess).toEqual(true);
       expect(cardTransactoinsDetails.body.value.originalAmount.currencyCode).toEqual('USD');
       expect(cardTransactoinsDetails.body.value.originalAmount.value).toEqual(-31);
       expect(cardTransactoinsDetails.body.value.fxRate).toEqual(1);
@@ -112,7 +115,6 @@ describe(`API > Dashboard details`, () => {
       const endpoint = `api/card/v1/CardTransactions/${transactionRefId}/details`;
       const cardTransactoinsDetails = await HttpMethods.get(endpoint, requestHeadersToken(accessToken), URLs.USAPortalURL);
       expect(cardTransactoinsDetails.status).toBe(200);
-      console.log(cardTransactoinsDetails);
       expect(cardTransactoinsDetails.body.value.originalAmount.currencyCode).toEqual('EUR');
       expect(cardTransactoinsDetails.body.value.originalAmount.value).toEqual(-190);
       expect(cardTransactoinsDetails.body.value.fxRate).toEqual(0.95);

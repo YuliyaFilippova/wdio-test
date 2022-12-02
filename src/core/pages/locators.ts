@@ -29,6 +29,9 @@ export const general = {
   buttonByName(name: string) {
     return $(`//button[contains(.,"${name}")]`);
   },
+  buttonByNameNum(name: string, num: number) {
+    return $(`(//button[contains(.,"${name}")])[${num}]`);
+  },
   inputValue(name: string) {
     return $(`input[placeholder="${name}"]`);
   },
@@ -160,7 +163,7 @@ export const mainMailPageElements = {
   // emailTemplateHeader: $('//table[2]//tbody/tr[2]//tr'),
   // firstTimeLoginButton: $('//tbody/tr[8]//a'),
   // activationUKAccountButton: $('//tbody/tr[7]/td/a'),
-  // lastOneSmsCode: $('(//div[contains(text(),"Centtrip")]/span)[1]'),
+  get lastOneSmsCode() { return $('(//div[contains(text(),"Centtrip")]/span)[1]') },
   emailsOnCurrentDate(date: string) {
     return $$(`//*[@class="time_column"][contains(text(),"${date}")]`);
   }
@@ -252,7 +255,7 @@ export const createNewAppElements = {
     get phoneNumber() { return $('//div[5]/label/div/span[2]') },
     get phoneType() { return $('//div[6]/label/div/div/div/div') },
     get phoneCode() { return $('//div[7]/label/div/div/div/div') },
-    addStepHeaderCustom(text:string) {
+    addStepHeaderCustom(text: string) {
       return $(`//h2[contains(.,"${text}")]`);
     }
   },
@@ -263,14 +266,14 @@ export const createNewAppElements = {
     get submitButton() { return $('[value="Submit"]') },
     get termsCheckbox() { return $('[id="termsAndConditions"]') },
     get termsCheckboxMonex() { return $('[id="termsAndConditionsMonex"]') },
-    selectAddDetailsButton(number:number) {
+    selectAddDetailsButton(number: number) {
       return $(`(//button[contains(.,"Add details")])[${number}]`);
     }
   },
   butttonByName(name: string) {
     return $(`//button[contains(.,"${name}")]`);
   },
-  selectFromDropdown(option:string) {
+  selectFromDropdown(option: string) {
     return $(`//p[contains(.,'${option}')]`);
   },
 };
@@ -278,9 +281,10 @@ export const createNewAppElements = {
 export const verificationWindowElements = {
   get verifyByEmailButton() { return $('[value="MultiFactorAuthenticationSelection.OneTimeEmail"]') },
   //   verifyByMobileButton: $('[value="MultiFactorAuthenticationSelection.LinkMobileApp"]'),
-  //   verifyBySmsButton: $('[value="MultiFactorAuthenticationSelection.OneTimeSms"]'),
+  get verifyBySmsButton() { return $('[value="MultiFactorAuthenticationSelection.OneTimeSms"]') },
   get verifyCodeField() { return $('[class="form-control form-control-lg"]') },
   get submitButton() { return $('[value="MultiFactorAuthenticationEmail.Submit"]') },
+  get submitSmsButton() { return $('[value="MultiFactorAuthenticationSms.Submit"]') },
 };
 
 export const USAMainPageElements = {
@@ -313,6 +317,7 @@ export const UKGeneralElements = {
   get searchField() { return $('#Keywords') },
   get searchButton() { return $('#search-btn') },
   get optionDropdown() { return $('#selectDropDownList_title') },
+  get multiFactorAuth() { return $('.multi-factor-authentication-selection.text-center') },
 };
 
 export const UKCreateUserPageElements = {
@@ -380,7 +385,7 @@ export const UKCreateUserPageElements = {
     get lastPageOfChs() { return $('.jPag-last') },
     get chDOBfield() { return $('#DateOfBirth') },
     get chPhoneTitleField() { return $('#PhoneNumberCode_title') },
-    chPhoneTitleItem(phoneCode: string){ return $(`//li[.='${phoneCode}']`);},
+    chPhoneTitleItem(phoneCode: string) { return $(`//li[.='${phoneCode}']`); },
     get chPhoneNumberField() { return $('#PhoneNumberWithoutCode') },
     get updateChSubmit() { return $('#modify-cardholder-submit') },
     get confirmationModal() { return $('#modify-cardholder-confirm-modal') },
@@ -391,11 +396,16 @@ export const UKCreateUserPageElements = {
 };
 
 export const UKUpdateAccountPageElements = {
-
+  get oldEmailField() { return $('[name="OldEmail"]') },
+  get findButton() { return $('[value="Find"]') },
+  get newEmailField() { return $('[name="newEmail"]') },
+  get updateButton() { return $('[value="Update Account"]') },
 };
 
 export const UKSignUpPageElements = {
-
+  get passwordField() { return $('#NewPassword') },
+  get confirmPassField() { return $('#ConfirmNewPassword') },
+  get confirmButton() { return $('[type="Submit"]') },
 };
 
 export const UKCardMigrationPageElements = {
@@ -584,10 +594,24 @@ export const USAManageCardsPageElements = {
   get transactionsTable() { return $('.transactions__table') },
   get transactionsTabLink() { return $('[href="/transactions/list"]') },
   table: {
+    get nameOfLastCorporate() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[1]') },
+    get nameOfLastOperatingAccount() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[2]') },
+    get namesOfAllCardholders() { return $$('//centtrip-manage-cards-list//table/tbody/tr/td[4]') },
+    get cardholderOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[4]') },
+    get numberOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[5]') },
+    get dateOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[6]') },
+    get balanceOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[8]') },
+    get dailyLimitOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[9]') },
+    get remainingSpendOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[10]') },
+    get cardStatusOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[11]') },
+    get atmAccessOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[12]/mat-icon') },
+    get lockStatusOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[13]') },
+    get firstRow() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]') },
     rowByName(name: string) {
       return $(`//tr[@role="row" and contains(.,"${name}")]`);
     },
     get nameOfLastCard() { return $('//centtrip-manage-cards-list//table/tbody/tr[1]/td[3]') },
+    get sharedBalanceTrue() { return $('//td[7]/mat-icon') },
   },
   cardOrders: {
     get corporateField() { return $('//centtrip-card-orders//centtrip-input/div/input') },
@@ -596,10 +620,12 @@ export const USAManageCardsPageElements = {
     get selectDeliveryAddress() { return $('//centtrip-card-orders-delivery-type//centtrip-radio-button/div/div[1]') },
     get selectLastDeliveryAddress() { return $('//centtrip-card-orders-delivery-type//centtrip-radio-button[last()]') },
     get addDeliveryAddressButton() { return $('.delivery-address__button-text--black') },
+    get deliveryAddressThirdStep() { return $('(//div[@class="file-select__text"])[4]') },
     get editDeliveryAddress() { return $('[svgicon="edit-outline"]') },
     get deliveryAddressSecondStep() { return $('(//div[@class="file-select__text"])[4]') },
     get nextButtonDelivery() { return $('(//button[contains(.,"Next")])[2]') },
     get uploadFileButton() { return $('.loader__text__bold') },
+    get uploadFileArea() { return $(`input[type="file"][id="file"]`) },
     get uploadFileInput() { return $('#file') },
     get nextButtonSelectFile() { return $('(//button[contains(.,"Next")])[3]') },
     get errorsFirstRow() { return $('//centtrip-card-orders-checking-data//table/tbody/tr[1]') },
@@ -624,8 +650,14 @@ export const USAManageCardsPageElements = {
   get inactiveCardLabel() { return $('[class="list-wrapper__inactive-pan ng-star-inserted"]') },
   get manageCardsTable() { return $('[role="columnheader"]') },
   details: {
+    get atmAccessEnabled() { return $('.checkbox') },
     get cardDetailsWindow() { return $('.details__content') },
-    get manageLimitsButton() { return $('.mat-icon notranslate pointer mat-icon-no-color ng-star-inserted') },
+    get manageLimitsButton() { return $('[data-mat-icon-name="settings-grey"]') },
+    get cardholderName() { return $('.holder__name') },
+    get cardNumber() { return $('.holder__card-numbers') },
+    get cardEmail() { return $('//div/div[2]/div[1]/div[1]/div[2]') },
+    get cardholderPhoneNumber() { return $('//centtrip-manage-cards-detail/div/div/div[2]/div[2]/div[2]') },
+    get cardStatus() { return $('//centtrip-manage-cards-detail//div[2]/div[3]/div[2]') },
     limits: {
       get maxDailySpendField() { return $('//div[contains(text(),"daily")]/following-sibling::div/div[2]/div[2]') },
       get cardDailySpendField() { return $('//div[contains(text(),"daily")]/following-sibling::div/div[1]/div[2]') },
@@ -654,6 +686,11 @@ export const USAManageCardsPageElements = {
     get maxSingleTransactionField() { return $('//centtrip-manage-cards-limits//div[4]/div[1]/centtrip-input/div/input') },
     get saveButton() { return $('//button[contains(.,"Save")]') }
   },
+
+  filter: {
+    get selectCorporateField() { return $('[formcontrolname="entityCodeRefIds"]') },
+    get selectOperatingAccountField() { return $('[placeholder="Select operating accounts"][type="text"]') },
+  }
 };
 
 export const USACreateUserPageElements = {
@@ -712,6 +749,8 @@ export const USACreateUserPageElements = {
   get monthField() { return $('[formcontrolname="month"]') },
   get dayField() { return $('[formcontrolname="day"]') },
   get yearField() { return $('//centtrip-date-select/div/centtrip-input//input') },
+  get dateActivePeriod() { return $('.datepicker-header__active-period') },
+  get previousArrow() { return $('.datepicker-header__btn--prev svg') },
 };
 
 export const signUpUSAPageElements = {
@@ -719,6 +758,7 @@ export const signUpUSAPageElements = {
     get passField() { return $('[id="NewPassword"]') },
     get confirmPassField() { return $('[id="ConfirmNewPassword"]') },
     get submitButton() { return $('[type="submit"]') },
+    get accountIsActivated() { return $('//*[contains(text(), "Your user account is successfully activated!")]') },
   }
 };
 
@@ -735,7 +775,7 @@ export const dashboardPageElements = {
   get fromAccount() { return $('[formcontrolname="fromAccountCodeRefId"]') },
   get toAccount() { return $('[formcontrolname="toAccountCodeRefId"]') },
   get toAccountInputStatus() { return $('(//mat-form-field/div/div[1]/div[1]/input)[2]') },
-  get amountField() { return $('[formcontrolname="amount"]') },
+  get amountField() { return $('(//centtrip-input/div/input)[3]') },
   get accountBalance() { return $('//centtrip-account-total-balance//div[2]/div[2]/div[1]/span[1]') },
   get totalBalance() { return $('[class="balance__total-digits ng-star-inserted"]') },
   get transferSucessModal() { return $('//div[contains(text(),"Transfer request successful")]') },
@@ -751,7 +791,7 @@ export const dashboardPageElements = {
     get cardNameOflastTransactionRow() { return $('//centtrip-transactions//tbody/tr[1]/td[3]') },
     get ccyOflastTransactionRow() { return $('//centtrip-transactions//tbody/tr[1]/td[4]') },
     get amountOflastTransactionRow() { return $('//centtrip-transactions//tbody/tr[1]/td[5]') },
-    get detailsOflastTransactionRow() { return $ ('//centtrip-transactions//tbody/tr[1]/td[6]') },
+    get detailsOflastTransactionRow() { return $('//centtrip-transactions//tbody/tr[1]/td[6]') },
     dateOfSelectedTransactionRow(row: number) {
       return $(`//centtrip-transactions//tbody/tr[${row}]/td[1]`);
     },
@@ -782,6 +822,9 @@ export const masterDashboardPageElements = {
   },
   get arrayOfAccounts() { return $$('//div[@class="accounts__description"]') },
   get operatingAccountBalance() { return $('(//div[@class="balance__sum"])[3]') },
+  recentTransactions: {
+    get lastOneTransaction() { return $('//table/tbody/tr[1]') },
+  },
 };
 
 export const USAAccountsPageElements = {
@@ -792,6 +835,10 @@ export const USAAccountsPageElements = {
   accountBalenceByNum(num: number) {
     return $(`//table/tbody/tr[${num}]/td[6]`);
   },
+  get addAccountButton() { return $('//button[contains(.,"Add Account")]') },
+  get accountNameField() { return $('(//centtrip-add-account//centtrip-input)[2]') },
+  get selectCorporateField() { return $('[displayproperty="entityName"]') },
+  get nextButton() { return $('//button[contains(.,"Next")]') },
   get accountsTable() { return $('[class="accounts__table"]') },
   get linkButtonForTheLastAccount() { return $('//centtrip-account-list-table//tr[1]/td[2]/div/mat-icon') },
   get accountNameOfLastAccount() { return $('//centtrip-account-list//table//tr[1]/td[2]/div') },
@@ -799,7 +846,11 @@ export const USAAccountsPageElements = {
   get accountTypeOfLastAccount() { return $('//centtrip-account-list//table//tr[1]/td[4]') },
   get accountStatusOfLastAccount() { return $('//centtrip-account-list//table//tr[1]/td[5]') },
   get lastAccount() { return $('(//centtrip-account-list//table//tr)[2]') },
+  get corporateNameOfLastAccount() { return $('//centtrip-account-list//table//tr[1]/td[1]') },
+  get nextStepButton() { return $('//button[contains(.,"Next step")]') },
+  get successPage() { return $('[class="form__success-message"]') },
   accountDetails: {
+    get detailsScreen() { return $('.details__company company') },
     get corporateName() { return $('[class="address__description"]') },
     get accountName() { return $('[centtripcustomtooltipclass="address__name-tooltip"]') },
     get accountStatus() { return $('[class="address__status"]') },
@@ -831,14 +882,61 @@ export const statementsPageElements = {
   get selectCorporate() { return $('(//centtrip-input/div/input)[1]') },
   get selectDepartament() { return $('(//centtrip-input/div/input)[2]') },
   get selectAccount() { return $('(//centtrip-input/div/input)[3]') },
+  balance: {
+    get moneyInFull() { return $('//header/div[2]/div[2]/span') },
+    get moneyInCents() { return $('//header/div[2]/div[2]/span[2]') },
+    get moneyOutFull() { return $('//header/div[2]/div[3]/span') },
+    get moneyOutCents() { return $('//header/div[2]/div[3]/span[2]') },
+    get endBalanceFull() { return $('//header/div[2]/div[4]/span[1]') },
+    get endBalanceCents() { return $('//header/div[2]/div[4]/span[2]') },
+    get startBalanceFull() { return $('//header/div[2]/div[1]/span[1]') },
+    get startBalanceCents() { return $('//header/div[2]/div[1]/span[2]') }
+  },
+  dateByNum(day: string, num: number) {
+    return $(`(//div[contains(@class, "mat")][contains(text(),"${day}")])[${num}]`);
+  },
+  transactions: {
+    get lastTransaction() { return $('(//table/tbody/tr)[1]') },
+    dateOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[1]`);
+    },
+    typeOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[2]`);
+    },
+    ccyOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[3]`);
+    },
+    amountOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[4]`);
+    },
+    statusOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[5]//mat-icon`);
+    },
+    balanceAfterOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[6]`);
+    },
+    detailsAfterOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[8]`);
+    },
+    carholderOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[9]`);
+    },
+    recipientOfSelectedTransactionRow(row: number) {
+      return $(`//table/tbody/tr[${row}]/td[10]`);
+    },
+  },
   get statusOfLastTransaction() { return $('//tbody/tr[1]/td[5]/div/mat-icon') },
 };
 
 export const USATransactionsPageElements = {
+  get balanceTable() { return $('.balance__table') },
   balance: {
     get collapseButton() { return $('.collapse-btn collapse-btn--expanded') },
     get selectOperatingAccountField() { return $('(//centtrip-transactions-balance-header//centtrip-input/div/input)[1]') },
     get selectAccountField() { return $('(//centtrip-transactions-balance-header//centtrip-input/div/input)[2]') },
+    arrowDownIcon(num: number) {
+      return $(`(//centtrip-datepicker/div/mat-icon)[${num}]`);
+    },
   },
   balanceTransactions: {
     typeOfSelectedTransactionRow(row: number) {
@@ -924,9 +1022,9 @@ export const USAProvisioningPageElements = {
     get email() { return $('(//centtrip-input/div/input)[1]') },
     get firstName() { return $('//input[@placeholder="Enter first name"]') },
     get lastName() { return $('(//centtrip-input/div/input)[3]') },
-    get monthOfBirth()  { return $('(//*[contains(./@id, "mat-select-value")]/span/span)[1]') },
-    get dayOfBirth()  { return $('(//*[contains(./@id, "mat-select-value")]/span/span)[2]') },
-    get yearOfBirth()  { return $('//input[@placeholder="Year"]') }
+    get monthOfBirth() { return $('(//*[contains(./@id, "mat-select-value")]/span/span)[1]') },
+    get dayOfBirth() { return $('(//*[contains(./@id, "mat-select-value")]/span/span)[2]') },
+    get yearOfBirth() { return $('//input[@placeholder="Year"]') }
   },
   createAccount: {
     get accountData() { return $('[class="form__corporate-name"]') },

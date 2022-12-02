@@ -159,20 +159,22 @@ export class CreateUserPageUK {
     AllureReporter.endStep();
   };
 
-  //   async updateAccountEmail(oldEmail: string, newEmail: string): Promise<void> {
-  //     await allureStep(`Update user with ${oldEmail} email and set ${newEmail} email for him`, async () => {
-  //       await Actions.hoverOnElement(UKGeneralElements.settingsButton);
-  //       await Actions.waitAndClick(general.linkByName('Update Account'));
-  //       await Waiters.waitUntilElementIsDisplayed(UKPortalUpdateAccountPageElements.oldEmailField);
-  //       await Actions.sendKeys(UKPortalUpdateAccountPageElements.oldEmailField, oldEmail);
-  //       await Actions.waitAndClick(UKPortalUpdateAccountPageElements.findButton);
-  //       await Waiters.waitUntilElementIsDisplayed(UKPortalUpdateAccountPageElements.newEmailField);
-  //       await Actions.sendKeys(UKPortalUpdateAccountPageElements.newEmailField, newEmail);
-  //       await Actions.waitAndClick(UKPortalUpdateAccountPageElements.updateButton);
-  //       await browser.switchTo().alert().accept();
-  //       console.log('Alert is closed');
-  //     });
-  //   };
+  async updateAccountEmail(oldEmail: string, newEmail: string): Promise<void> {
+    AllureReporter.startStep(`Update user with ${oldEmail} email and set ${newEmail} email for him`);
+    await (await UKGeneralElements.settingsButton).moveTo();
+    await Actions.waitAndClick(await general.linkByName('Update Account'));
+    await (await UKUpdateAccountPageElements.oldEmailField).waitForDisplayed();
+    await (await UKUpdateAccountPageElements.oldEmailField).setValue(oldEmail);
+    await Actions.waitAndClick(await UKUpdateAccountPageElements.findButton);
+    await (await UKUpdateAccountPageElements.newEmailField).waitForDisplayed();
+    await (await UKUpdateAccountPageElements.newEmailField).setValue(newEmail);
+    await Actions.waitAndClick(await UKUpdateAccountPageElements.updateButton);
+    await browser.pause(1000);
+    await browser.acceptAlert();
+    await browser.pause(1000);
+    console.log('Alert is closed');
+    AllureReporter.endStep();
+  };
 
   async updateCardholderUserUK(email: string, phoneNumber: string, dob: string): Promise<void> {
     AllureReporter.startStep(`Update cardholder with ${email} email`);
@@ -186,16 +188,15 @@ export class CreateUserPageUK {
     AllureReporter.endStep();
   };
 
-  //   async updatePhoneNumberUK(phoneNumber: string,): Promise<void> {
-  //     await allureStep(`Update cardholder phone number`, async () => {
-  //       await Waiters.waitUntilElementIsDisplayed(UKCreateUserPageElements.mobileNumberField);
-  //       await UKCreateUserPageElements.mobileNumberField.clear();
-  //       await Actions.sendKeys(UKCreateUserPageElements.mobileNumberField, `+44${phoneNumber}`);
-  //       await Actions.waitAndClick(UKCreateUserPageElements.modifyButton);
-  //       await Waiters.waitUntilElementIsDisplayed(UKCreateUserPageElements.successCreateMesssage);
-  //       await Actions.waitAndClick(UKCreateUserPageElements.successOkButton);
-  //     });
-  //   };
+  async updatePhoneNumberUK(phoneNumber: string,): Promise<void> {
+    AllureReporter.startStep(`Update cardholder phone number`);
+    await (await UKCreateUserPageElements.mobileNumberField).waitForDisplayed();
+    await (await UKCreateUserPageElements.mobileNumberField).setValue(`+44${phoneNumber}`);
+    await Actions.waitAndClick(await UKCreateUserPageElements.modifyButton);
+    await (await UKCreateUserPageElements.successCreateMesssage).waitForDisplayed();
+    await Actions.waitAndClick(await UKCreateUserPageElements.successOkButton);
+    AllureReporter.endStep();
+  };
 
   async createAdminUKUnderSA(firstName: string, lastName: string, postalCode: string, address1: string, address2: string, city: string, country: string,
     phoneNumber: string, homeNumber: string): Promise<void> {
@@ -236,9 +237,9 @@ export class CreateUserPageUK {
     await (await UKCreateUserPageElements.superAdmin.chDOBfield).setValue(dob);
     await (await UKCreateUserPageElements.superAdmin.updateChSubmit).scrollIntoView();
     await Actions.waitAndClick(await UKCreateUserPageElements.superAdmin.updateChSubmit);
-    await (await UKCreateUserPageElements.superAdmin.confirmationModal).waitForDisplayed(); 
+    await (await UKCreateUserPageElements.superAdmin.confirmationModal).waitForDisplayed();
     await Actions.waitAndClick(await UKCreateUserPageElements.superAdmin.confirmationModalOK);
-    await (await UKCreateUserPageElements.superAdmin.successUpdateMesssage).waitForDisplayed(); 
+    await (await UKCreateUserPageElements.superAdmin.successUpdateMesssage).waitForDisplayed();
     await Actions.waitAndClick(await UKCreateUserPageElements.superAdmin.successUpdateMesssageOk);
     AllureReporter.endStep();
   };

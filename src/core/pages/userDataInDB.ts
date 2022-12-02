@@ -1,6 +1,6 @@
 import AllureReporter from "@wdio/allure-reporter";
 import { DBQueries } from "../../testData/DBQueries";
-import { configMSSQL, connection, connectionUSA } from "../../wdio.conf";
+import ping from '../../connections';
 
 const sql = require('mssql');
 const dynamo = require('dynamodb');
@@ -13,7 +13,7 @@ export class UserDataInDB {
   async userExistsAspNetUsersDB(email: string, expFirstName: string, expLastName: string, expDob: string, expPhoneNumber: string): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is existed in AspNetUsers DB`);
-      connection.query(DBQueries.getUserDataFromAspNetUsersDB(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserDataFromAspNetUsersDB(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -47,7 +47,7 @@ export class UserDataInDB {
   async userNotExistsAspNetUsersDB(email: string): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is NOT existed in AspNetUsers DB`);
-      connection.query(DBQueries.getUserDataFromAspNetUsersDB(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserDataFromAspNetUsersDB(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -65,7 +65,7 @@ export class UserDataInDB {
 
   async checkUserDataInAspNetUsersDB(email: string, expFirstName: string, expLastName: string, expDob: string, expPhoneNumber: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      connection.query(DBQueries.getUserDataFromAspNetUsersDB(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserDataFromAspNetUsersDB(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -93,7 +93,7 @@ export class UserDataInDB {
 
   async getUserIdFromAspNetUsersDB(email: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      connection.query(DBQueries.getUserIdFromAspNetUsersDB(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserIdFromAspNetUsersDB(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -114,6 +114,44 @@ export class UserDataInDB {
     });
   };
 
+  async checkUserDataInAuthenticationDB(email: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      ping.connection.query(DBQueries.getUserDataFromAuthenticationDBQuery(email), function (err, rows) {
+        if (err) {
+          // console.log(err);
+          reject(err);
+        } else {
+          // console.log(rows);
+          expect(rows.length).toEqual(1);
+          Object.keys(rows).forEach(function (keyItem) {
+            const row = rows[keyItem];
+            const emailAspNetUsers = row.Email;
+            expect(emailAspNetUsers).toEqual(email);
+            resolve(emailAspNetUsers);
+          });
+        }
+      });
+    });
+  };
+
+  async checkPhoneNumberAspNetUsersDB(email: string, expPhoneNumber: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      ping.connection.query(DBQueries.getPhoneNumberAspNetUsersDB(email), function (err, rows) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else if (rows.length === 0) {
+          reject(new Error('User not found'));
+        } else {
+          expect(rows.length).not.toEqual(0);
+          expect(rows[0].PhoneNumber).toEqual(expPhoneNumber);
+          AllureReporter.addStep(`Expect phone ${rows[0].PhoneNumber} is equal to ${expPhoneNumber}`);
+          resolve(rows[0].PhoneNumber);
+        }
+      });
+    });
+  };
+
   //Unique Identity
 
   async userExistsUniqueIdentityv2(email: string, expFirstName: string, expLastName: string, expDisplayName: string, expDob: string,
@@ -121,7 +159,7 @@ export class UserDataInDB {
     expPostCode: string, expCountryName: string): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is existed in Identity v2`);
-      connection.query(DBQueries.getUserDataFromUniqueIdentity2(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserDataFromUniqueIdentity2(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -175,7 +213,7 @@ export class UserDataInDB {
   async userNotExistsUniqueIdentityv2(email: string): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is NOT existed in Identity v2`);
-      connection.query(DBQueries.getUserDataFromUniqueIdentity2(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserDataFromUniqueIdentity2(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -191,6 +229,33 @@ export class UserDataInDB {
     });
   };
 
+  async checkPhoneNumberIdentityv2(email: string, expContactPhoneNumber: string, expMobilePhoneNumber: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      ping.connection.query(DBQueries.getPhoneNumberIdentityv2DB(email), function (err, rows) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else if (rows.length === 0) {
+          reject(new Error('User not found'));
+        } else {
+          expect(rows.length).not.toEqual(0);
+          expect(rows.length).not.toEqual(0);
+          Object.keys(rows).forEach(function (keyItem) {
+            const row = rows[keyItem];
+            const ContactPhoneNumber = row.ContactPhoneNumber;
+            const MobilePhoneNumber = row.MobilePhoneNumber;
+
+            expect(ContactPhoneNumber).toEqual(expContactPhoneNumber);
+            AllureReporter.addStep(`Expect phone ${ContactPhoneNumber} is equal to ${expContactPhoneNumber}`);
+            expect(MobilePhoneNumber).toEqual(expMobilePhoneNumber);
+            AllureReporter.addStep(`Expect phone ${MobilePhoneNumber} is equal to ${expMobilePhoneNumber}`);
+            resolve(expMobilePhoneNumber);
+          });
+        }
+      });
+    });
+  };
+
   // Identity US
 
   async userExistsIdentityUS(email: string, expFirstName: string, expLastName: string, expDob: string, expPhoneNumber: string, expGender: string,
@@ -198,7 +263,7 @@ export class UserDataInDB {
     expPostCode: string, expCountry: number): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is existed in Identity US`);
-      connectionUSA.query(DBQueries.getUserFromIdentityUS(email), function (err, rows) {
+      ping.connectionUSA.query(DBQueries.getUserFromIdentityUS(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -264,7 +329,7 @@ export class UserDataInDB {
   async userNotExistsIdentityUS(email: string): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is NOT existed in Identity US`);
-      connectionUSA.query(DBQueries.getUserFromIdentityUS(email), function (err, rows) {
+      ping.connectionUSA.query(DBQueries.getUserFromIdentityUS(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -282,7 +347,7 @@ export class UserDataInDB {
 
   async checkUserDataInIdentityUS(email: string, expFirstName: string, expLastName: string, expDob: string, expPhoneNumber: string, expGender: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      connectionUSA.query(DBQueries.getUserMainDataFromIndentityUS(email), function (err, rows) {
+      ping.connectionUSA.query(DBQueries.getUserMainDataFromIndentityUS(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -310,7 +375,7 @@ export class UserDataInDB {
   async checkUserFullDataIndentityUS(email: string, expFirstName: string, expLastName: string, expDob: string, expPhoneNumber: string, expGender: string, expAddress: string,
     expCity: string, expPostCode: string, expCountry: number): Promise<string> {
     return new Promise((resolve, reject) => {
-      connectionUSA.query(DBQueries.getUserMainDataFromIndentityUS(email), function (err, rows) {
+      ping.connectionUSA.query(DBQueries.getUserMainDataFromIndentityUS(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -343,21 +408,19 @@ export class UserDataInDB {
     });
   };
 
-  async checkUserDataInAuthenticationDB(email: string): Promise<string> {
+  async checkPhoneNumberIndentityUS(email: string, expContactPhoneNumber: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      connection.query(DBQueries.getUserDataFromAuthenticationDBQuery(email), function (err, rows) {
+      ping.connectionUSA.query(DBQueries.getPhoneNumberUSIdentityDB(email), function (err, rows) {
         if (err) {
-          // console.log(err);
+          console.log(err);
           reject(err);
+        } else if (rows.length === 0) {
+          reject(new Error('User is not found'));
         } else {
-          // console.log(rows);
-          expect(rows.length).toEqual(1);
-          Object.keys(rows).forEach(function (keyItem) {
-            const row = rows[keyItem];
-            const emailAspNetUsers = row.Email;
-            expect(emailAspNetUsers).toEqual(email);
-            resolve(emailAspNetUsers);
-          });
+          expect(rows.length).not.toEqual(0);
+          expect(rows[0].ContactPhoneNumber).toEqual(expContactPhoneNumber);
+          AllureReporter.addStep(`Expect phone ${rows[0].ContactPhoneNumber} is equal to ${expContactPhoneNumber}`);
+          resolve(rows[0].ContactPhoneNumber);
         }
       });
     });
@@ -369,7 +432,7 @@ export class UserDataInDB {
     expHomeNumber: string, expAddress: string[], emptyAddress?: boolean): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is existed in Identity UK`);
-      connection.query(DBQueries.getUserDataFromIdentityDB(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserDataFromIdentityDB(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -401,7 +464,7 @@ export class UserDataInDB {
             AllureReporter.addStep(`Expect homeNumber ${homeNumber} is equal to ${expHomeNumber}`);
             for (let i = 0; i < expAddress.length; i += 1) {
               expect(address).toContain(expAddress[i]);
-              AllureReporter.addStep(`Expect addressExists ${address} is equal to ${expAddress[i]}`);
+              AllureReporter.addStep(`Expect address!=Null "${address}" is equal to ${expAddress[i]}`);
             }
             if (emptyAddress === true) {
               expect(address).toBe(expAddress);
@@ -418,7 +481,7 @@ export class UserDataInDB {
   async userNotExistsIdentityUK(email: string): Promise<string> {
     return new Promise((resolve, reject) => {
       AllureReporter.startStep(`Check ${email} user is NOT existed in Identity UK`);
-      connection.query(DBQueries.getUserDataFromIdentityDB(email), function (err, rows) {
+      ping.connection.query(DBQueries.getUserDataFromIdentityDB(email), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
@@ -434,11 +497,29 @@ export class UserDataInDB {
     });
   };
 
+  async checkPhoneNumberIndentityUK(email: string, expPhoneNumber: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      ping.connection.query(DBQueries.getPhoneNumberUKIdentityDB(email), function (err, rows) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else if (rows.length === 0) {
+          reject(new Error('User not found'));
+        } else {
+          expect(rows.length).not.toEqual(0);
+          expect(rows[0].PhoneNumber).toEqual(expPhoneNumber);
+          AllureReporter.addStep(`Expect phone ${rows[0].PhoneNumber} is equal to ${expPhoneNumber}`);
+          resolve(rows[0].PhoneNumber);
+        }
+      });
+    });
+  }
+
   // MSSQL 
 
   async userExistInMSSQLDB(email: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      sql.connect(configMSSQL, (err) => {
+      sql.connect(ping.configMSSQL, (err) => {
         if (err) {
           console.log(err);
           reject(err);
@@ -461,7 +542,7 @@ export class UserDataInDB {
 
   async userNotExistInMSSQLDB(email: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      sql.connect(configMSSQL, (err) => {
+      sql.connect(ping.configMSSQL, (err) => {
         if (err) {
           console.log(err);
           reject(err);
@@ -472,7 +553,7 @@ export class UserDataInDB {
               console.log(err);
               reject(err);
             } else if (rows.recordset.length === 0) {
-              expect(rows.length).toEqual(0);
+              expect(rows.length).toEqual(undefined);
               AllureReporter.addStep(`Expect ${rows.length} is equal to 0`);
               resolve(rows.recordset.length);
             }
@@ -609,7 +690,7 @@ export class UserDataInDB {
             const row = data[keyItem];
             const userEmail = row.A;
             const mobileNumber = row.Q;
-            console.log('MobilePhonein Dynamo: ', mobileNumber);
+            console.log('MobilePhone in Dynamo: ', mobileNumber);
             expect(expMobileNumber).toEqual(mobileNumber);
             AllureReporter.addStep(`Expect ${expMobileNumber} is equal to ${mobileNumber}`);
             expect(email).toEqual(userEmail);

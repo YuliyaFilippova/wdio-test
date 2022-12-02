@@ -1,4 +1,3 @@
-import { connection, connectionUSA } from '../../wdio.conf';
 import { Other } from '../../core/utils/other';
 import { LoginAPICall } from '../../core/utils/loginAPICall';
 import { createUserPage } from '../../core/pages/centtripUSA/createUser';
@@ -6,22 +5,23 @@ import { salesforceData } from '../../testData/other';
 import { signInPage } from '../../core/pages/centtripAppWeb/signInPage';
 import { cardsPage } from '../../core/pages/centtripUSA/cardsPage';
 import AllureReporter from '@wdio/allure-reporter';
-import { CredentialsIF, UserIF } from '../../testData/usersData';
+import userDataIF, { Password, UserIF } from '../../testData/usersData';
 import { userDataInDB } from '../../core/pages/userDataInDB';
 import { Salesforce } from '../../core/pages/externalServices/salesforce';
 import { URLs } from '../../urls';
 import { RandomGenerator } from '../../core/utils/randomGenerator';
 import { USAManageCardsPageElements } from '../../core/pages/locators';
 import { Actions } from '../../core/utils/actions';
+import ping from '../../connections'
 
-describe(`Identity Facade >> Create USA users`, () => {
+describe(`Identity Facade >> C1 - Create USA users`, () => {
 
   before(async () => {
-    if (!connectionUSA._connectCalled) {
-      await connectionUSA.connect();
+    if (!ping.connectionUSA._connectCalled) {
+      await ping.connectionUSA.connect();
     }
-    if (!connection._connectCalled) {
-      await connection.connect();
+    if (!ping.connection._connectCalled) {
+      await ping.connection.connect();
     }
   });
 
@@ -40,7 +40,7 @@ describe(`Identity Facade >> Create USA users`, () => {
     AllureReporter.addStory('C1.1 US Corporate Admin: All fields');
     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/17378');
     console.log('C1.1 - ', await UserIF.corpAdminAllFields.email);
-    const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+    const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
     await createUserPage.createUserFullAPI(await UserIF.corpAdminAllFields.email, token, 'CorporateAdmin',
       UserIF.corpAdminAllFields.firstName, UserIF.corpAdminAllFields.lastName, UserIF.corpAdminAllFields.dob,
       UserIF.corpAdminAllFields.gender, `+1${UserIF.corpAdminAllFields.phoneNumber}`, UserIF.corpAdminAllFields.street,
@@ -74,7 +74,7 @@ describe(`Identity Facade >> Create USA users`, () => {
     await userDataInDB.userExistsUniqueIdentityv2(await UserIF.corpAdminAllFields.email, UserIF.corpAdminAllFields.firstName, UserIF.corpAdminAllFields.lastName,
       `${UserIF.corpAdminAllFields.firstName} ${UserIF.corpAdminAllFields.lastName}`, UserIF.corpAdminAllFields.dobDB,
       `+1${UserIF.corpAdminAllFields.phoneNumber}`, `+1${UserIF.corpAdminAllFields.phoneNumber}`, UserIF.corpAdminAllFields.street, null,
-      UserIF.corpAdminAllFields.city, UserIF.corpAdminAllFields.state, UserIF.corpAdminAllFields.postalCode, "United States of America");
+      UserIF.corpAdminAllFields.city, UserIF.corpAdminAllFields.state, UserIF.corpAdminAllFields.postalCode, UserIF.countryUSA);
   });
 
   // --------------- C1.2 US Corporate Admin: Required fields ------------------------------
@@ -84,7 +84,7 @@ describe(`Identity Facade >> Create USA users`, () => {
     AllureReporter.addStory('C1.2 US Corporate Admin: Required fields');
     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/19608');
     console.log('C1.2 - ', await UserIF.corpAdminOnlyRequiredFields.email);
-    const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+    const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
     await createUserPage.createUserRequiredFieldsAPI(await UserIF.corpAdminOnlyRequiredFields.email, token, 'CorporateAdmin',
       UserIF.corpAdminOnlyRequiredFields.firstName, UserIF.corpAdminOnlyRequiredFields.lastName, UserIF.corpAdminOnlyRequiredFields.dob,
       `+1${UserIF.corpAdminAllFields.phoneNumber}`);
@@ -132,13 +132,13 @@ describe(`Identity Facade >> Create USA users`, () => {
     const filename = 'batchCardUpload' + RandomGenerator.numbers(5);
     await cardsPage.generateXlsxFileWithCustomCardData(await UserIF.cardholder1_3.email, UserIF.cardholder1_3.firstName, UserIF.cardholder1_3.lastName,
       `${UserIF.cardholder1_3.firstName} ${UserIF.cardholder1_3.lastName}`, UserIF.cardholder1_3.birthDateDay,
-      UserIF.cardholder1_3.birthDateMonth, UserIF.cardholder1_3.birthDateYear, '1', UserIF.cardholder1_3.phoneNumber, UserIF.chIF.corporate, 'No', filename);
-    await signInPage.signInAsRegisteredUserUSA(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
-    await cardsPage.goToCardOrdersPageAndSelectCorporate(UserIF.chIF.corporate, UserIF.chIF.operAccount);
+      UserIF.cardholder1_3.birthDateMonth, UserIF.cardholder1_3.birthDateYear, '1', UserIF.cardholder1_3.phoneNumber, userDataIF.chAccountUS.corporate, 'No', filename);
+    await signInPage.signInAsRegisteredUserUSA(userDataIF.CenttripAdminUSA, Password);
+    await cardsPage.goToCardOrdersPageAndSelectCorporate(userDataIF.chAccountUS.corporate, userDataIF.chAccountUS.operAccount);
     await Actions.uploadFileForHiddenInput(`/src/testData/tmp/${filename}.xlsx`, await USAManageCardsPageElements.cardOrders.uploadFileInput);
     await Actions.waitAndClick(await USAManageCardsPageElements.cardOrders.nextButtonSelectFile);
     await (await USAManageCardsPageElements.cardOrders.successMessage).waitForDisplayed();
-    await cardsPage.checkBatchCardUploadSuccess(UserIF.adminFullName, UserIF.chIF.corporate, UserIF.chIF.operAccount, '1 card');
+    await cardsPage.checkBatchCardUploadSuccess(userDataIF.adminFullName, userDataIF.chAccountUS.corporate, userDataIF.chAccountUS.operAccount, '1 card');
     await userDataInDB.userExistsAspNetUsersDB(await UserIF.cardholder1_3.email, UserIF.cardholder1_3.firstName, UserIF.cardholder1_3.lastName, UserIF.cardholder1_3.dob,
       `+1${UserIF.cardholder1_3.phoneNumber}`);
   }).timeout(300000);
@@ -169,6 +169,7 @@ describe(`Identity Facade >> Create USA users`, () => {
       `+1${UserIF.cardholder1_3.phoneNumber}`, `+1${UserIF.cardholder1_3.phoneNumber}`, null,
       null, null, null, null, null);
   });
+  
   // ----------------- C1.4 US Corporate Admin > US Cardholder -------------------------------------
 
   it(`[C37790] US Corporate Admin > US Cardholder: AspNetUsers @smoke`, async () => {
@@ -177,23 +178,24 @@ describe(`Identity Facade >> Create USA users`, () => {
     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37790');
     console.log('C1.4 - ', await UserIF.corpAdmin1_4.email);
     // Create Admin US to Tesla
-    const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+    const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
     await createUserPage.createUserFullAPI(await UserIF.corpAdmin1_4.email, token, 'CorporateAdmin',
       UserIF.corpAdmin1_4.firstName, UserIF.corpAdmin1_4.lastName, UserIF.corpAdmin1_4.dob,
       UserIF.corpAdmin1_4.gender, `+1${UserIF.corpAdmin1_4.phoneNumber}`, UserIF.corpAdmin1_4.street,
       UserIF.corpAdmin1_4.postalCode, UserIF.corpAdmin1_4.city, 'US', UserIF.corpAdmin1_4.state);
     // Create Cardholder US 
     await browser.url(URLs.USAPortalURL);
-    await signInPage.signInAsRegisteredUserUSA(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+    await signInPage.signInAsRegisteredUserUSA(userDataIF.CenttripAdminUSA, Password);
     const filename = 'batchCardUpload' + RandomGenerator.numbers(4);
     await cardsPage.generateXlsxFileWithCustomCardData(await UserIF.corpAdmin1_4.email, UserIF.cardholder4.firstName, UserIF.cardholder4.lastName, `${UserIF.cardholder4.firstName} ${UserIF.cardholder4.lastName} `,
-      UserIF.cardholder4.birthDateDay, UserIF.cardholder4.birthDateMonth, UserIF.cardholder4.birthDateYear, '1', UserIF.cardholder4.phoneNumber, UserIF.chIF.corporate, 'No', filename);
+      UserIF.cardholder4.birthDateDay, UserIF.cardholder4.birthDateMonth, UserIF.cardholder4.birthDateYear, '1', UserIF.cardholder4.phoneNumber, 
+      userDataIF.chAccountUS.corporate, 'No', filename);
     console.log('email', await UserIF.corpAdmin1_4.email);
-    await cardsPage.goToCardOrdersPageAndSelectCorporate(UserIF.chIF.corporate, UserIF.chIF.operAccount);
+    await cardsPage.goToCardOrdersPageAndSelectCorporate(userDataIF.chAccountUS.corporate, userDataIF.chAccountUS.operAccount);
     await Actions.uploadFileForHiddenInput(`/src/testData/tmp/${filename}.xlsx`, await USAManageCardsPageElements.cardOrders.uploadFileInput);
     await Actions.waitAndClick(await USAManageCardsPageElements.cardOrders.nextButtonSelectFile);
     await (await USAManageCardsPageElements.cardOrders.successMessage).waitForDisplayed();
-    await cardsPage.checkBatchCardUploadSuccess(UserIF.adminFullName, UserIF.chIF.corporate, UserIF.chIF.operAccount, '1 card');
+    await cardsPage.checkBatchCardUploadSuccess(userDataIF.adminFullName, userDataIF.chAccountUS.corporate, userDataIF.chAccountUS.operAccount, '1 card');
     await userDataInDB.userExistsAspNetUsersDB(await UserIF.corpAdmin1_4.email, UserIF.corpAdmin1_4.firstName, UserIF.corpAdmin1_4.lastName, UserIF.corpAdmin1_4.dobDB,
       `+1${UserIF.corpAdmin1_4.phoneNumber}`);
   }).timeout(300000);
@@ -224,7 +226,7 @@ describe(`Identity Facade >> Create USA users`, () => {
     await userDataInDB.userExistsUniqueIdentityv2(await UserIF.corpAdmin1_4.email, UserIF.corpAdmin1_4.firstName, UserIF.corpAdmin1_4.lastName,
       `${UserIF.corpAdmin1_4.firstName} ${UserIF.corpAdmin1_4.lastName}`, UserIF.corpAdmin1_4.dobDB,
       `+1${UserIF.corpAdmin1_4.phoneNumber}`, `+1${UserIF.corpAdmin1_4.phoneNumber}`, UserIF.corpAdmin1_4.street, null,
-      UserIF.corpAdmin1_4.city, UserIF.corpAdmin1_4.state, UserIF.corpAdmin1_4.postalCode, 'United States of America');
+      UserIF.corpAdmin1_4.city, UserIF.corpAdmin1_4.state, UserIF.corpAdmin1_4.postalCode, UserIF.countryUSA);
   });
 
 });

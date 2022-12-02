@@ -10,17 +10,15 @@ import { general, signInPageElements, UKCardMigrationPageElements, UKCreateUserP
 import { Actions } from '../../core/utils/actions';
 import { LoginAPICall } from '../../core/utils/loginAPICall';
 import { Other } from '../../core/utils/other';
-import { UserIF } from '../../testData/usersData';
+import userDataIF, { Password, UserIF } from '../../testData/usersData';
 import { userDataInDB } from '../../core/pages/userDataInDB';
 import AllureReporter from '@wdio/allure-reporter';
 import { pathToUploadPfsCardCreation } from '../../testData/usersData';
 import { URLs } from '../../urls';
-// import { connection, connectionUSA } from '../../wdio.conf';
+import ping from '../../connections';
 
-let CredentialsIF = require('../../credentials2');
-[connection, connectionUSA, configMSSQL] = require('../../connections'); 
-
-describe(`Identity Facade >> Edit All regions users`, () => {
+describe(`Identity Facade >> U3 - Update All regions users`, () => {
+    
     const emailallu3_1 = RandomGenerator.generateRandEmail('_u3_1@harakirimail.com');
     const emailallu3_2 = RandomGenerator.generateRandEmail('_u3_2@harakirimail.com');
     const emailallu3_3 = RandomGenerator.generateRandEmail('_u3_3@harakirimail.com');
@@ -127,11 +125,11 @@ describe(`Identity Facade >> Edit All regions users`, () => {
     };
 
     before(async () => {
-        if (!connectionUSA._connectCalled) {
-            await connectionUSA.connect();
+        if (!ping.connectionUSA._connectCalled) {
+            await ping.connectionUSA.connect();
         }
-        if (!connection._connectCalled) {
-            await connection.connect();
+        if (!ping.connection._connectCalled) {
+            await ping.connection.connect();
         }
     });
 
@@ -145,7 +143,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
 
     // ---------------- U3.1 Corporate Admin: UK > US - US Edit UStoUK country --------------------------------------
 
-    it.only(`[C19602] Corporate Admin: UK > US - US Edit UStoUK country: AspNetUsers @smoke`, async () => {
+    it(`[C19602] Corporate Admin: UK > US - US Edit UStoUK country: AspNetUsers @smoke`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.1 Corporate Admin: UK > US - US Edit UStoUK country');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/19602');
@@ -153,16 +151,16 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         // create user in UK
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_1, UserIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_1, userDataIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
             UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode, UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2,
             UserIF.corpAdminUK.city, UserIF.countryUK, UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
             UserIF.corpAdminUK.dob);
         await commonPageUK.logoutFromUK();
         await Other.deleteCacheCookiesUK();
         // create user in US
-        const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+        const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
         await createUserPage.createUserFullAPI(await emailallu3_1, token, 'CorporateAdmin', corpAdminUSAAllFields.firstName,
             corpAdminUSAAllFields.lastName, corpAdminUSAAllFields.dobAPI, corpAdminUSAAllFields.gender, `+1${corpAdminUSAAllFields.phoneNumber}`,
             corpAdminUSAAllFields.street, corpAdminUSAAllFields.postalCode, corpAdminUSAAllFields.city, 'US', corpAdminUSAAllFields.state);
@@ -194,7 +192,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
             null, corpAdminUSAEditUK.postalCode, 826);
     });
 
-    it(`[C22143] Corporate Admin: UK > US - US Edit UStoUK country: DynamoDb @smoke`, async () => {
+    xit(`[C22143] Corporate Admin: UK > US - US Edit UStoUK country: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.1 Corporate Admin: UK > US - US Edit UStoUK country');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22143');
@@ -230,7 +228,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/19616');
         console.log('U3.2 - ', await emailallu3_2);
         // Create user in US
-        const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+        const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
         await createUserPage.createUserFullAPI(await emailallu3_2, token, 'CorporateAdmin', corpAdminUSAAllFields.firstName, corpAdminUSAAllFields.lastName,
             corpAdminUSAAllFields.dobAPI, corpAdminUSAAllFields.gender, `+1${corpAdminUSAAllFields.phoneNumber}`, corpAdminUSAAllFields.street, corpAdminUSAAllFields.postalCode,
             corpAdminUSAAllFields.city, 'US', corpAdminUSAAllFields.state);
@@ -238,9 +236,9 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         // Create user in UK
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_2, UserIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_2, userDataIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
             UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode, UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2,
             UserIF.corpAdminUK.city, UserIF.countryUK, UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
             UserIF.corpAdminUK.dob);
@@ -273,7 +271,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
             null, corpAdminUSAEditUS.postalCode, 840);
     });
 
-    it(`[C22082] Corporate Admin: US > UK - US Edit UKtoUS country: DynamoDb @smoke`, async () => {
+    xit(`[C22082] Corporate Admin: US > UK - US Edit UKtoUS country: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.2 Corporate Admin: US > UK - US Edit UKtoUS country');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22082');
@@ -308,16 +306,16 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         AllureReporter.addStory('U3.3 Corporate Admin: US > UK - US Remove address');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/21901');
         console.log('U3.3 - ', await emailallu3_3);
-        const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+        const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
         await createUserPage.createUserFullAPI(await emailallu3_3, token, 'CorporateAdmin', corpAdminUSAAllFields.firstName, corpAdminUSAAllFields.lastName,
             corpAdminUSAAllFields.dobAPI, corpAdminUSAAllFields.gender, corpAdminUSAAllFields.phoneNumber, corpAdminUSAAllFields.street, corpAdminUSAAllFields.postalCode,
             corpAdminUSAAllFields.city, 'US', corpAdminUSAAllFields.state);
         await Other.deleteCacheCookiesUSA();
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_3, UserIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_3, userDataIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
             UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode, UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2,
             UserIF.corpAdminUK.city, 'United States', UserIF.phoneCodeUSA, UserIF.phoneCodeUSA, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
             UserIF.corpAdminUK.dob);
@@ -349,7 +347,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
             null, null, null, UserIF.corpAdminUK.city, null, UserIF.corpAdminUK.postalCode, 840);
     });
 
-    it(`[C22151] Corporate Admin: US > UK - US Remove address: DynamoDb`, async () => {
+    xit(`[C22151] Corporate Admin: US > UK - US Remove address: DynamoDb`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.3 Corporate Admin: US > UK - US Remove address');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22151');
@@ -387,25 +385,25 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         // Create Admin in UK
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_4, UserIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_4, userDataIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
             UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode, UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2,
             UserIF.corpAdminUK.city, UserIF.countryUK, UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
             UserIF.corpAdminUK.dob);
         await commonPageUK.logoutFromUK();
         await Other.deleteCacheCookiesUK();
         // Create Admin in USA
-        const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+        const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
         await createUserPage.createUserFullAPI(await emailallu3_4, token, 'CorporateAdmin', corpAdminUSAAllFields.firstName, corpAdminUSAAllFields.lastName,
             corpAdminUSAAllFields.dobAPI, corpAdminUSAAllFields.gender, corpAdminUSAAllFields.phoneNumber, corpAdminUSAAllFields.street, corpAdminUSAAllFields.postalCode,
             corpAdminUSAAllFields.city, 'US', corpAdminUSAAllFields.state);
         // Edit Admin in UK
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.updateUserUK(await emailallu3_4, UserIF.accountUK, corpAdminUKEditUK.title, corpAdminUKEditUK.gender,
+        await createUserPageUK.updateUserUK(await emailallu3_4, userDataIF.accountUK, corpAdminUKEditUK.title, corpAdminUKEditUK.gender,
             corpAdminUKEditUK.firstName, corpAdminUKEditUK.lastName, corpAdminUKEditUK.postalCode, corpAdminUKEditUK.address1, corpAdminUKEditUK.address2,
             corpAdminUKEditUK.city, UserIF.countryUK, UserIF.phoneCodeUK, UserIF.phoneCodeUK, corpAdminUKEditUK.phoneNumber, corpAdminUKEditUK.homeNumber,
             corpAdminUKEditUK.dobAPI, true);
@@ -432,7 +430,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
             corpAdminUKEditUK.city, null, corpAdminUKEditUK.postalCode, 826);
     });
 
-    it(`[C22143] Corporate Admin: UK > US - US Edit UStoUK country: DynamoDb @smoke`, async () => {
+    xit(`[C22143] Corporate Admin: UK > US - US Edit UStoUK country: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.4 Corporate Admin: UK > US - UK Edit UStoUK country');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22143');
@@ -468,7 +466,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/19612');
         console.log('U3.5 - ', await emailallu3_5);
         // Create Admin US
-        const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+        const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
         await createUserPage.createUserFullAPI(await emailallu3_5, token, 'CorporateAdmin', corpAdminUSAAllFields.firstName, corpAdminUSAAllFields.lastName,
             corpAdminUSAAllFields.dobAPI, corpAdminUSAAllFields.gender, corpAdminUSAAllFields.phoneNumber, corpAdminUSAAllFields.street, corpAdminUSAAllFields.postalCode, corpAdminUSAAllFields.city, 'US',
             corpAdminUSAAllFields.state);
@@ -476,10 +474,10 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         // Create Admin UK
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await browser.pause(2000);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_5, UserIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
+        await createUserPageUK.createAdminUK('corporateAdmin', await emailallu3_5, userDataIF.accountUK, UserIF.corpAdminUK.title, UserIF.corpAdminUK.gender,
             UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode, UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2,
             UserIF.corpAdminUK.city, UserIF.countryUK, UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
             UserIF.corpAdminUK.dob);
@@ -488,10 +486,10 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         // Edit country in UK
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await browser.pause(2000);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.updateUserUK(await emailallu3_5, UserIF.accountUK, corpAdminUKEditUSA.title, corpAdminUKEditUSA.gender,
+        await createUserPageUK.updateUserUK(await emailallu3_5, userDataIF.accountUK, corpAdminUKEditUSA.title, corpAdminUKEditUSA.gender,
             corpAdminUKEditUSA.firstName, corpAdminUKEditUSA.lastName, corpAdminUKEditUSA.postalCode, corpAdminUKEditUSA.address1, corpAdminUKEditUSA.address2,
             corpAdminUKEditUSA.city, 'United States', UserIF.phoneCodeUSA, UserIF.phoneCodeUSA, corpAdminUKEditUSA.phoneNumber, corpAdminUKEditUSA.homeNumber,
             corpAdminUKEditUSA.dob, true);
@@ -518,7 +516,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
             null, null, corpAdminUKEditUSA.city, null, corpAdminUKEditUSA.postalCode, 840);
     });
 
-    it(`[C22163] Corporate Admin: US > UK - UK Edit UKtoUS country: DynamoDb @smoke`, async () => {
+    xit(`[C22163] Corporate Admin: US > UK - UK Edit UKtoUS country: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.5 Corporate Admin: US > UK - UK Edit UKtoUS country');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22163');
@@ -553,10 +551,10 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/21898');
         console.log('U3.6 - ', await emailallu3_6);
         // Create Carholder UK
-        const fileName = await cardMigrationPage.generateBatchFile(await emailallu3_6, process.env.ENV);
+        const fileName = await cardMigrationPage.generateBatchFile(await emailallu3_6, process.env.env);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -566,7 +564,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         await commonPageUK.logoutFromUK();
         await Other.deleteCacheCookiesUK();
         // Create Admin in US
-        const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+        const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
         await createUserPage.createUserFullAPI(await emailallu3_6, token, 'CorporateAdmin', corpAdminUSAAllFields.firstName, corpAdminUSAAllFields.lastName,
             corpAdminUSAAllFields.dobAPI, corpAdminUSAAllFields.gender, corpAdminUSAAllFields.phoneNumber, corpAdminUSAAllFields.street, corpAdminUSAAllFields.postalCode,
             corpAdminUSAAllFields.city, 'US', corpAdminUSAAllFields.state);
@@ -574,7 +572,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         // Modify Cardholder under Centtrip Admin
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.switchToAnotherAccount(await emailallu3_6);
         await (await UKGeneralElements.settingsButton).moveTo();
         await Actions.waitAndClick(await general.linkByName('Modify Card Holder Details'));
@@ -604,7 +602,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
             corpAdminUSAAllFields.postalCode, 840);
     });
 
-    it(`[C22196] UK Cardholder > US - UK Modify under Centtrip Admin: DynamoDb`, async () => {
+    xit(`[C22196] UK Cardholder > US - UK Modify under Centtrip Admin: DynamoDb`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.6 UK Cardholder > US - UK Modify under Centtrip Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22196');
@@ -646,10 +644,10 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37573');
         console.log('U3.7 - ', await emailallu3_7);
         // Create Carholder UK
-        const fileName = await cardMigrationPage.generateBatchFile(await emailallu3_7, process.env.ENV);
+        const fileName = await cardMigrationPage.generateBatchFile(await emailallu3_7, process.env.env);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -659,7 +657,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         await commonPageUK.logoutFromUK();
         await Other.deleteCacheCookiesUK();
         // Create Admin in US
-        const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+        const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
         await createUserPage.createUserFullAPI(await emailallu3_7, token, 'CorporateAdmin', corpAdminUSAAllFields.firstName, corpAdminUSAAllFields.lastName,
             corpAdminUSAAllFields.gender, corpAdminUSAAllFields.dobAPI, corpAdminUSAAllFields.phoneNumber, corpAdminUSAAllFields.street, corpAdminUSAAllFields.postalCode,
             corpAdminUSAAllFields.city, 'US', corpAdminUSAAllFields.state);
@@ -667,7 +665,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
         // Modify Cardholder under Super Admin
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.SuperAdminUK.Email, CredentialsIF.SuperAdminUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.SuperAdminUK, Password);
         await (await general.elementByText('Last')).scrollIntoView();
         await Actions.waitAndClick(await UKCreateUserPageElements.superAdmin.lastPageOfChs);
         await Actions.waitAndClick(await general.lastEditBtn);
@@ -697,7 +695,7 @@ describe(`Identity Facade >> Edit All regions users`, () => {
             corpAdminUSAAllFields.postalCode, 840);
     });
 
-    it(`[C37576] UK Cardholder > US - UK Edit under Super Admin: DynamoDb`, async () => {
+    xit(`[C37576] UK Cardholder > US - UK Edit under Super Admin: DynamoDb`, async () => {
         AllureReporter.addSeverity('trivial');
         AllureReporter.addStory('U3.7 UK Cardholder > US - UK Edit under Super Admin');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37576');

@@ -1,3 +1,4 @@
+import allureReporter from '@wdio/allure-reporter';
 import { addTestId, addSeverity } from '../../../core/helper/allure/reporter';
 import { connectionUSA } from '../../../wdio.conf';
 import { LoginAPICall } from '../../../core/utils/loginAPICall';
@@ -19,11 +20,11 @@ describe(`API > Card transactions`, () => {
     if (!connectionUSA._connectCalled) {
       await connectionUSA.connect();
     }
-    accessToken = await LoginAPICall.getAccessTokenForAPI(Credentials.CenttripAdminAPI.Email, Credentials.CenttripAdminAPI.Password);
+    accessToken = await LoginAPICall.getAccessTokenForAPI(Credentials.CenttripAdminNew.Email, Credentials.CenttripAdminAPI.Password);
   });
   it(`[C36840] Transfer (account to account): OutgoingTransfer @smoke`, async () => {
-    addSeverity('critical');
-    addTestId('https://centtrip.testrail.io/index.php?/cases/view/36840');
+    allureReporter.addSeverity('critical');
+    allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/36840');
     const paymentTransactionTag = RandomGenerator.uppperTextAndNumbers(16);
     const randomDepositTransactionId = RandomGenerator.uppperTextAndNumbers(16);
     const randomTransactionId = RandomGenerator.uppperTextAndNumbers(16);
@@ -50,18 +51,17 @@ describe(`API > Card transactions`, () => {
   });
 
   it(`[C36841] Transfer (account to account): TransferSentOut @smoke`, async () => {
-    addSeverity('critical');
-    addTestId('https://centtrip.testrail.io/index.php?/cases/view/36841');
+    allureReporter.addSeverity('critical');
+    allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/36841');
     const randomDepositTransactionId = RandomGenerator.uppperTextAndNumbers(16);
     const randomTransactionId = RandomGenerator.uppperTextAndNumbers(16);
     const guid = uuidv4();
     const trunsferResult = await HttpMethods.post('api/account/v1/transfers', requestHeadersToken(accessToken),
-      requestBody.centtripInternalTransferBody('f3f8913a-7918-e961-6d60-39dfe5e762a4', '0f412ec0-de5d-43fc-ee3d-ef215e9f355a', null, 0.02, guid),
+      requestBody.centtripInternalTransferBody('b5946301-c481-3bbd-2446-f32cad2288bb', '498b9274-ec31-44c7-94e5-7b66192dde95', null, 0.02, guid),
       URLs.USAPortalURL);
     expect(trunsferResult.status).toBe(200);
     expect(trunsferResult.body.isSuccess).toBe(true);
-    const transactionTag = await dashboardPage.getExternalIdForCreatedTransaction(moment().format('YYYY-MM-DD'), 'NOT');
-
+    const transactionTag = await dashboardPage.getExternalIdForCreatedTransaction(moment().format('YYYY-MM-DD'), '');
     const sentOutTransferBody = requestBody.transferBody(transactionTag, 'Amir wallet', 'AH3227C223222B5FKBMZL8XNG',
       -2, 'Snacks and Drinks', 'BA32272223222B5FKBQGK97R3', 'TransferSentOut');
 
@@ -77,11 +77,11 @@ describe(`API > Card transactions`, () => {
   });
 
   it(`[C36842] Transfer (account to account): TransferConfirmed @smoke`, async () => {
-    addSeverity('critical');
-    addTestId('https://centtrip.testrail.io/index.php?/cases/view/36842');
+    allureReporter.addSeverity('critical');
+    allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/36842');
     const guid = uuidv4();
     const trunsferResult = await HttpMethods.post('api/account/v1/transfers', requestHeadersToken(accessToken),
-      requestBody.centtripInternalTransferBody('f3f8913a-7918-e961-6d60-39dfe5e762a4', '0f412ec0-de5d-43fc-ee3d-ef215e9f355a', null, 0.03, guid),
+      requestBody.centtripInternalTransferBody('b5946301-c481-3bbd-2446-f32cad2288bb', '498b9274-ec31-44c7-94e5-7b66192dde95', null, 0.03, guid),
       URLs.USAPortalURL);
     expect(trunsferResult.status).toBe(200);
     expect(trunsferResult.body.isSuccess).toBe(true);
@@ -96,15 +96,15 @@ describe(`API > Card transactions`, () => {
   });
 
   it(`[C36845] Transfer (account to account): TransferFailed @smoke`, async () => {
-    addSeverity('critical');
-    addTestId('https://centtrip.testrail.io/index.php?/cases/view/36845');
+    allureReporter.addSeverity('critical');
+    allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/36845');
     const guid = uuidv4();
     const trunsferResult = await HttpMethods.post('api/account/v1/transfers', requestHeadersToken(accessToken),
-      requestBody.centtripInternalTransferBody('f3f8913a-7918-e961-6d60-39dfe5e762a4', '0f412ec0-de5d-43fc-ee3d-ef215e9f355a', null, 0.04, guid),
+      requestBody.centtripInternalTransferBody('b5946301-c481-3bbd-2446-f32cad2288bb', '498b9274-ec31-44c7-94e5-7b66192dde95', null, 0.04, guid),
       URLs.USAPortalURL);
     expect(trunsferResult.status).toBe(200);
     expect(trunsferResult.body.isSuccess).toBe(true);
-    const transactionTag = await dashboardPage.getExternalIdForCreatedTransaction(moment().format('YYYY-MM-DD'), 'NOT');
+    const transactionTag = await dashboardPage.getExternalIdForCreatedTransaction(moment().format('YYYY-MM-DD'), '');
 
     const failedTransferBody = requestBody.transferBody(transactionTag, 'Amir wallet', 'AH3227C223222B5FKBMZL8XNG',
       -4, 'Snacks and Drinks', 'BA32272223222B5FKBQGK97R3', 'TransferFailed');
@@ -115,16 +115,17 @@ describe(`API > Card transactions`, () => {
   });
 
   it(`[C36846] Payment (account to transfer instrument): TransferSentOut @smoke`, async () => {
-    addSeverity('critical');
-    addTestId('https://centtrip.testrail.io/index.php?/cases/view/36846');
+    allureReporter.addSeverity('critical');
+    allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/36846');
     const paymentTransactionTag = RandomGenerator.uppperTextAndNumbers(16);
     const guid = uuidv4();
     const trunsferResult = await HttpMethods.post('api/account/v1/transfers', requestHeadersToken(accessToken),
       requestBody.centtripInternalTransferBody('f3f8913a-7918-e961-6d60-39dfe5e762a4', null, '75b437fd-c5a1-43f0-840d-bd9cdbd67695', 0.05, guid),
       URLs.USAPortalURL);
+    console.log('This is body - ', trunsferResult.body);
     expect(trunsferResult.status).toBe(200);
     expect(trunsferResult.body.isSuccess).toBe(true);
-    const transactionTag = await dashboardPage.getExternalIdForCreatedTransaction(moment().format('YYYY-MM-DD'), 'NOT');
+    const transactionTag = await dashboardPage.getExternalIdForCreatedTransaction(moment().format('YYYY-MM-DD'), '');
     const sentOutTransferBody = requestBody.paymentSettledNotification(paymentTransactionTag, transactionTag, 'Amir wallet',
       'AH3227C223222B5FKBMZL8XNG', -5, 'Snacks and Drinks', 'BA32272223222B5FKBQGK97R3', 'SE322KH223222D5FKBMZN2X99');
 
@@ -134,8 +135,8 @@ describe(`API > Card transactions`, () => {
   });
 
   it(`[C38754] Deposit (to account): IncomingTransfer @smoke`, async () => {
-    addSeverity('critical');
-    addTestId('https://centtrip.testrail.io/index.php?/cases/view/38754');
+    allureReporter.addSeverity('critical');
+    allureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/38754');
     const paymentTransactionTag = RandomGenerator.uppperTextAndNumbers(16);
     const randomDepositTransactionId = RandomGenerator.uppperTextAndNumbers(16);
 

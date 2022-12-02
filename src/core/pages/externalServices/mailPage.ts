@@ -1,4 +1,3 @@
-
 import AllureReporter from '@wdio/allure-reporter';
 import { mainMailPageElements } from '../locators';
 import { Actions } from '../../utils/actions';
@@ -34,16 +33,22 @@ export class MailMainPage {
   };
 
   async verifyEmailByAPI(email: string) {
-    AllureReporter.addStep('Open mail service for cheking number of emails for current date');
+    AllureReporter.startStep('User Verification process by API');
     const endPoint = (email).slice(0, -17);
+    console.log('Email after cutting ', endPoint);
     const getRequest = await HttpMethods.get(`/inbox/${endPoint}`, {}, 'https://harakirimail.com');
     expect(getRequest.status).toBe(200);
+    AllureReporter.addStep(`Mailbox is available https://harakirimail.com/inbox/${endPoint}`);
     const responce = getRequest.body;
     const text = '/email/';
     const indexOfText = responce.indexOf(text) + text.length;
     const emailId = responce.substring(indexOfText, indexOfText + 24);
     await browser.url(`https://harakirimail.com/email/${emailId}`);
-    await Actions.waitAndClick(await mainMailPageElements.verifyButton);
+    AllureReporter.addStep(`Varification email is opened https://harakirimail.com//email/${emailId}`);
+    await (await mainMailPageElements.verifyButton).scrollIntoView(); 
+    await (await mainMailPageElements.verifyButton).waitForClickable();
+    await (await mainMailPageElements.verifyButton).click();
+    AllureReporter.endStep();
   };
 
   async getVerificationCodeByAPI(email: string): Promise<string> {
@@ -61,3 +66,5 @@ export class MailMainPage {
     return verificationCode;
   };
 };
+
+export const mailMainPage = new MailMainPage();

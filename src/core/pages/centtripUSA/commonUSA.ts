@@ -4,8 +4,8 @@ import { connectionUSA } from '../../../wdio.conf';
 import { DBQueries } from '../../../testData/DBQueries';
 import { Actions } from '../../utils/actions';
 import {
-  general, USAMainPageElements,
-  USAManageCardsPageElements
+  general, USAMainPageElements, statementsPageElements,
+  USAManageCardsPageElements, USACreateUserPageElements
 } from '../locators';
 
 export class CommonPageUSA {
@@ -176,15 +176,15 @@ export class CommonPageUSA {
     AllureReporter.endStep();
   };
 
-  async checkFullCorporateDataInEHDB(companyName: string, corporateName: string, postalCode: string, street:string, city: string, state: string, country: string, phoneType: string,
+  async checkFullCorporateDataInEHDB(companyName: string, corporateName: string, postalCode: string, street: string, city: string, state: string, country: string, phoneType: string,
     phoneNumber: string, email: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      connectionUSA.query(DBQueries.getFullCorporateDataQuery(companyName), function(err, rows) {
+      connectionUSA.query(DBQueries.getFullCorporateDataQuery(companyName), function (err, rows) {
         if (err) {
           console.log(err);
           reject(err);
         } else {
-          Object.keys(rows).forEach(function(keyItem) {
+          Object.keys(rows).forEach(function (keyItem) {
             const row = rows[keyItem];
             const corporate = row.LegalName;
             expect(corporateName).toEqual(row.LegalName);
@@ -201,5 +201,44 @@ export class CommonPageUSA {
         }
       });
     });
+  };
+
+  async getExternalIDforCard(name: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      connectionUSA.query(DBQueries.getExternalId(name), function (err, rows) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else if (rows.length === 0) {
+          reject(new Error('ExternalId not found'));
+        } else {
+          Object.keys(rows).forEach(function (keyItem) {
+            const row = rows[keyItem];
+            const externalId = row.ExternalId;
+            resolve(externalId);
+          });
+        }
+      });
+    });
+  };
+
+  async fillDateFieldCustom(dateButton: WebdriverIO.Element, year: string, month: string, day: string, currentYear?: boolean): Promise<void> {
+    AllureReporter.startStep('Set date in date picker');
+    try {
+      await Actions.waitAndClick(dateButton);
+      await (await USACreateUserPageElements.dateActivePeriod).waitForDisplayed();
+    } catch {
+      await Actions.waitAndClick(dateButton);
+    }
+    await Actions.waitAndClick(await USACreateUserPageElements.dateActivePeriod);
+    await Actions.waitAndClick(await USACreateUserPageElements.previousArrow);
+    if (currentYear === false) {
+      await Actions.waitAndClick(await general.divByName(year));
+    } else {
+      await Actions.waitAndClick(await general.divByNameNum(year, 2));
+    }
+    await Actions.waitAndClick(await general.divByName(month));
+    await Actions.waitAndClick(await statementsPageElements.dateByNum(day, 1));
+    AllureReporter.endStep();
   };
 }

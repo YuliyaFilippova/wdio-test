@@ -4,94 +4,105 @@ const path = require('path');
 
 export const downloadsExpPath = path.resolve(__dirname, './tmp/').replace(/\\/g, '/');
 export const pathToUploadPfsCardCreation = `/src/testData/tmp/`;
+export const Password = 'Password1!';
 
 //QA
-export const CredentialsIF = {
-  CenttripAdminUSA: {
-    Email: 'e.halynia@andersenlab.com',
-    Password: 'Password1!'
-  },
-  CenttripAdminiUK: {
-    Email: 'yulia.centtripadmin.qa@harakirimail.com',
-    Password: 'Password1!'
-  },
-  SuperAdminUK: {
-    Email: 'superadminqa02@harakirimail.com',
-    Password: 'Password1!'
-  },
-};
-
-export const resource_Id = 'e122f379-b4be-455e-a0d0-54d5dbe0679c'; //QA - AMC Networks
-
-//DEV
-// if (process.env.ENV === 'dev') {
-
-//   credentialsIF = {
-//     CenttripAdminUSA: {
-//       Email: 'megaadmin@harakirimail.com',
-//       Password: 'Password1!'
-//     },
-//    CenttripAdminiUK: {
-//       Email: 'y.philippova@andersenlab.com',
-//       Password: 'Password1!'
-//     },
-//     SuperAdminUK: {
-//       Email: 'superadmin05@harakirimail.com',
-//       Password: 'Password1!'
-//     },
-//   };
-
-//   resource_Id = 'dd16eb6a-49ac-492d-a099-745b091eaa91'; //DEV - Aiken
-
-// };
-
-// export const CredentialsIF = credentialsIF;
-// export const resourceId = resource_Id;
-
-export const RegistrationInput = {
-  defaultUser: {
-    firstName: 'Olga',
-    lastName: 'Nolga',
-    dobField: '1',
-    yobField: '1980',
-    emailField: 'test@test.com',
-    passField: 'Password1!',
-    confirmPassField: 'Password1!',
-    randFirstName: RandomGenerator.lowerCaseText(5) + 'Test',
-    randLastName: RandomGenerator.lowerCaseText(5) + 'User',
-    randEmail: RandomGenerator.lowerCaseText(8) + '@harakirimail.com'
-  },
-  invalidData: {
-    dateField: '-+ */!eEеЕ@a\t&%',
-    passField: 'Password111!',
-    name50symbols: 'Aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeef',
-    email256symbols: `aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccc
-cccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccccccccccddddddd7815@harakirimail.com`,
-    emailInvalidSymbols: RandomGenerator.lowerCaseText(8) + `/*$@harakirimail.com`,
-    emailInvalidFormat: 'example.com',
-    phoneNumber21symbols: '123456789012345678901'
-  },
-  invalidFirstNames: [
-    'Abc.abc',
-    'Abc*abc'
-  ]
-};
-
-export const UserIF = {
-
-  chIF: {
+let userDataIF = {
+  CenttripAdminUSA: 'e.halynia@andersenlab.com',
+  CenttripAdminiUK: 'auto.centtripadmin.qa@harakirimail.com',
+  SuperAdminUK: 'superadminqa02@harakirimail.com',
+  resourceId: 'e122f379-b4be-455e-a0d0-54d5dbe0679c', //AMC Networks
+  adminFullName: 'Eduard Halynia',
+  chAccountUS: {
     corporate: 'Ander Corporate',
     operAccount: 'Minsk'
   },
-  cardholderUS: {
+  chAccountUS2: {
     corporate: 'Omaha',
     operAccount: 'Summit'
-  }, // QA
-  // cardholder: {
-  //   corporate: 'Light', 
-  //   operAccount: 'Li_standard'
-  // },  // DEV
-  adminFullName: 'Eduard Halynia',
+  },
+  accountUK: 'Corporate AQA DC:19902037',
+  accountUSA: 'Aiken',
+
+  corpAdminWithoutAddress: {
+    email: 'cusa.clutter.ca@harakirimail.com',
+    phoneNumberNew: RandomGenerator.numbers(10) + ''
+  },
+
+  corpAdminUK: {
+    email: 'corpukadminqa11@harakirimail.com',
+    phoneNumberNew: RandomGenerator.numbers(10) + ''
+  },
+
+  cardholderUK: {
+    email: 'change.mobile@harakirimail.com',
+    phoneNumberNew: RandomGenerator.numbers(10) + ''
+  },
+
+  corpAdminUSUK: {
+    email: 'usa.uk.corp.admin.qa@harakirimail.com',
+    phoneNumberNew: RandomGenerator.numbers(10) + ''
+  },
+
+  cardholderUSUK: {
+    email: 'usa.uk.card.centtrip.qa@harakirimail.com',
+    phoneNumberNew: RandomGenerator.numbers(10) + ''
+  },
+
+};
+
+//DEV
+if (process.env.ENV === 'dev') {
+  userDataIF = {
+    CenttripAdminUSA: 'megaadmin@harakirimail.com',
+    CenttripAdminiUK: 'y.philippova@andersenlab.com',
+    SuperAdminUK: 'superadmin05@harakirimail.com',
+    resourceId: 'dd16eb6a-49ac-492d-a099-745b091eaa91', //Tesla?
+    adminFullName: 'Mega Admin',
+    chAccountUS: {
+      corporate: 'Udemy',
+      operAccount: 'Learning'
+    },
+    chAccountUS2: {
+      corporate: 'Light',
+      operAccount: 'Li_standard'
+    },
+    accountUK: 'Ampersand & Ampersand DC:1000471',
+    accountUSA: 'Tesla',
+    corpAdminWithoutAddress: {
+      email: 'phone_aqa02@harakirimail.com',
+      phoneNumberNew: RandomGenerator.numbers(10) + ''
+    },
+    corpAdminUK: {
+      email: 'afex.corpadmin.dev@harakirimail.com',
+      phoneNumberNew: RandomGenerator.numbers(10) + ''
+    },
+
+    cardholderUK: {
+      email: 'corpuser57@harakirimail.com',
+      phoneNumberNew: RandomGenerator.numbers(10) + ''
+    },
+    corpAdminUSUK: {
+      email: 'usa.uk.corp.admin.dev@harakirimail.com',
+      phoneNumberNew: RandomGenerator.numbers(10) + ''
+    },
+    cardholderUSUK: {
+      email: 'usa.uk.card.centtrip.dev@harakirimail.com',
+      phoneNumberNew: RandomGenerator.numbers(10) + ''
+    },
+  }
+};
+
+export default userDataIF;
+
+export const UserIF = {
+
+  limitsNum: 100000,
+  phoneCodeUSA: '001 (US)',
+  phoneCodeUK: '0044 (GB)',
+  countryUK: 'United Kingdom',
+  countryUSA: 'United States of America',
+  password: 'Password1!',
 
   corpAdminAllFields: {
     firstName: 'First' + RandomGenerator.lowerCaseText(4),
@@ -153,15 +164,6 @@ export const UserIF = {
     birthDateMonth: '1',
     birthDateYear: '1981',
   },
-
-  accountUK: 'Corporate AQA DC:19902037',  //QA  // DEV 'Ampersand & Ampersand DC:1000471',
-  accountUSA: 'Aiken',  //QA  // DEV 'Tesla',
-  limitsNum: 100000,
-  phoneCodeUSA: '001 (US)',
-  phoneCodeUK: '0044 (GB)',
-  countryUK: 'United Kingdom',
-  countryUSA: 'United States of America',
-  password: 'Password1!',
 
   emailSuperAdmin: RandomGenerator.generateRandEmail('_csa_uk2.1@harakirimail.com'),
   emailCorporateAdmin: RandomGenerator.generateRandEmail('_ca_uk2.2@harakirimail.com'),
@@ -305,7 +307,38 @@ export const UserIF = {
     postalCode: '10011',
     dob: '1982-02-14T00:00:00',
     dobDB: 'Sun Feb 14 1982',
+    dobDynamo: '14/02/1982',
     gender: 'Female'
+  },
+
+  superAdminAct: {
+    firstName: 'FirstUKCSA' + RandomGenerator.lowerCaseText(5),
+    lastName: 'LastUKCSA' + RandomGenerator.lowerCaseText(5),
+    gender: 'Male',
+    city: 'CityUKO',
+    address1: 'AddLine1UKCSA',
+    address2: 'AddLine2UKCSA',
+    postalCode: '11115',
+    phoneNumber: '7883200468',
+    homeNumber: '7883200468',
+    dob: '01/01/1981',
+    dobDB: 'Wed Jan 01 1981',
+    title: 'Mr.'
+  },
+
+  corporateAdminAct: {
+    firstName: 'FirstUKQCA' + RandomGenerator.lowerCaseText(5),
+    lastName: 'LastUKQCA' + RandomGenerator.lowerCaseText(5),
+    gender: 'Male',
+    city: 'CityUKQ',
+    address1: 'AddLine1UKQCA',
+    address2: 'AddLine2UKQCA',
+    postalCode: '11117',
+    phoneNumber: '2027953213',
+    homeNumber: '2027953213',
+    dob: '02/02/1982',
+    dobDB: 'Mon Feb 02 1982',
+    title: 'Mr.'
   },
 };
 
@@ -408,4 +441,33 @@ export const transactionSettings = {
     merchantAll: 'NB Bookstore New York USA',
     reference: 'Buy something'
   }
+};
+
+export const RegistrationInput = {
+  defaultUser: {
+    firstName: 'Olga',
+    lastName: 'Nolga',
+    dobField: '1',
+    yobField: '1980',
+    emailField: 'test@test.com',
+    passField: 'Password1!',
+    confirmPassField: 'Password1!',
+    randFirstName: RandomGenerator.lowerCaseText(5) + 'Test',
+    randLastName: RandomGenerator.lowerCaseText(5) + 'User',
+    randEmail: RandomGenerator.lowerCaseText(8) + '@harakirimail.com'
+  },
+  invalidData: {
+    dateField: '-+ */!eEеЕ@a\t&%',
+    passField: 'Password111!',
+    name50symbols: 'Aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeef',
+    email256symbols: `aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccc
+cccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccccccccccddddddd7815@harakirimail.com`,
+    emailInvalidSymbols: RandomGenerator.lowerCaseText(8) + `/*$@harakirimail.com`,
+    emailInvalidFormat: 'example.com',
+    phoneNumber21symbols: '123456789012345678901'
+  },
+  invalidFirstNames: [
+    'Abc.abc',
+    'Abc*abc'
+  ]
 };

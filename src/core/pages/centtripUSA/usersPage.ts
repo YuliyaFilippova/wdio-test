@@ -5,6 +5,8 @@ import { general, USAManageCardsPageElements, USAUsersPageElements } from '../lo
 import { requestBody } from '../../../testData/other';
 import { HttpMethods } from '../../api/rest';
 import { apiEndpoints } from '../../../testData/apiEndpoints';
+import { connection } from "../../../wdio.conf";
+import { DBQueries } from "../../../testData/DBQueries";
 
 export class UsersPage {
 
@@ -54,7 +56,7 @@ export class UsersPage {
     await browser.pause(2000);
   };
 
-  async updateUserRoleAPI(token: string, userId: string, role:string, resourceId?: string): Promise<void> {
+  async updateUserRoleAPI(token: string, userId: string, role: string, resourceId?: string): Promise<void> {
     const requestHeadersToken = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -73,4 +75,32 @@ export class UsersPage {
       expect(assignRoleRequest.status).toBe(204);
     }
   };
-}
+
+  async updateUserPhoneNumber(token, phoneNumber: string): Promise<void> {
+    AllureReporter.startStep('Filling the fields of updating user phone number');
+    const requestHeadersToken = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+    const updatePhoneNumberRequest = await HttpMethods.put(apiEndpoints.updatePhoneNumber, requestHeadersToken,
+      requestBody.updatePhoneNumber(`+1${phoneNumber}`), URLs.USAPortalURL);
+    expect(updatePhoneNumberRequest.status).toBe(200);
+    AllureReporter.endStep();
+  };
+
+  async disableTwoFactorAuthentication(email: string): Promise < number > {
+    return new Promise((resolve, reject) => {
+      connection.query(DBQueries.updateUserAuthenticationDB(email), function (err, result) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          console.log(`Changed ${result.changedRows} row(s)`);
+          resolve(result);
+        }
+      });
+    });
+  };
+};
+
+export const usersPage = new UsersPage();

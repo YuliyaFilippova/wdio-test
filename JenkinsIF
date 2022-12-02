@@ -22,10 +22,10 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh 'npm install'
                     sh 'rm -rf allure-results/*'
-                    sh 'rm run clean'
+                    sh 'npm run clean'
                     script{
                         try {
-                            sh "npm run iFacade"
+                            sh "ENV=qa npm run iFacade"
                         } catch (error) {
                             throw error
                         } finally {

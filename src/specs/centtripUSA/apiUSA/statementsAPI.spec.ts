@@ -6,6 +6,7 @@ import { requestBody, requestHeadersToken } from '../../../testData/other';
 import { HttpMethods } from '../../../core/api/rest';
 import { apiEndpoints } from '../../../testData/apiEndpoints';
 import { URLs } from '../../../urls';
+import moment = require('moment');
 
 describe(`API > Statements`, () => {
     let accessToken;
@@ -144,16 +145,7 @@ describe(`API > Statements`, () => {
         const statementsTransactions = await HttpMethods.post(apiEndpoints.statementsTransaction, requestHeadersToken(accessToken), bodyRequest, URLs.USAPortalURL);
         expect(statementsTransactions.status).toBe(200);
         expect(statementsTransactions.body.isSuccess).toBe(true);
-        expect(statementsTransactions.body.value.data[0].transactionDate).toEqual(transactionDateTime);
-        expect(statementsTransactions.body.value.data[0].status).toEqual('Declined');
-        expect(statementsTransactions.body.value.data[0].type).toEqual('Atm');
-        expect(statementsTransactions.body.value.data[0].currency).toEqual('USD');
-        expect(statementsTransactions.body.value.data[0].amount).toEqual(0);
-        expect(statementsTransactions.body.value.data[0].balanceAfter).toEqual(3152.63);
-        expect(statementsTransactions.body.value.data[0].details).toEqual(detailsResult);
-        expect(statementsTransactions.body.value.data[0].isCardTransaction).toEqual(true);
-        expect(statementsTransactions.body.value.data[0].cardHolder).toEqual('Olga Nuggets');
-        expect(statementsTransactions.body.value.data[0].recipient).toEqual(null);
+        expect(statementsTransactions.body.value.data).toEqual([]);
     });
 
     it(`[C38766] Statements table: Pagination @smoke`, async () => {
@@ -168,14 +160,14 @@ describe(`API > Statements`, () => {
         const firstSeparatorByDate = statementsTransactions.body.value.next.separatorByDateTime;
         const firstSeparatorByRefIds = statementsTransactions.body.value.next.separatorByRefIds[0];
         expect(statementsTransactions.body.value.data.length).toEqual(5);
-        expect(statementsTransactions.body.value.refIdsForReport.length).toEqual(7);
-        expect(statementsTransactions.body.value.totalCount).toEqual(7);
+        expect(statementsTransactions.body.value.refIdsForReport.length).toEqual(6);
+        expect(statementsTransactions.body.value.totalCount).toEqual(6);
         expect(statementsTransactions.body.value.prev).toEqual(null);
         expect(statementsTransactions.body.value.data[0].amount).toEqual(1);
         expect(statementsTransactions.body.value.data[1].amount).toEqual(-1);
         expect(statementsTransactions.body.value.data[2].amount).toEqual(-2);
-        expect(statementsTransactions.body.value.data[3].amount).toEqual(0);
-        expect(statementsTransactions.body.value.data[4].amount).toEqual(-31);
+        expect(statementsTransactions.body.value.data[3].amount).toEqual(-31);
+        expect(statementsTransactions.body.value.data[4].amount).toEqual(-32);
 
         const nextPageBody = requestBody.statementsTransactionsExtended('f3f8913a-7918-e961-6d60-39dfe5e762a4', transactionDateTime,
             toDateTime, firstSeparatorByDate, 'Next', firstSeparatorByRefIds, 5);
@@ -184,12 +176,12 @@ describe(`API > Statements`, () => {
         expect(nextPage.body.isSuccess).toBe(true);
         const secondSeparatorByDate = nextPage.body.value.prev.separatorByDateTime;
         const secondSeparatorByRefIds = nextPage.body.value.prev.separatorByRefIds[0];
-        expect(nextPage.body.value.data.length).toEqual(2);
-        expect(nextPage.body.value.refIdsForReport.length).toEqual(7);
-        expect(nextPage.body.value.totalCount).toEqual(7);
+        expect(nextPage.body.value.data.length).toEqual(1);
+        expect(nextPage.body.value.refIdsForReport.length).toEqual(6);
+        expect(nextPage.body.value.totalCount).toEqual(6);
         expect(nextPage.body.value.next).toEqual(null);
-        expect(nextPage.body.value.data[0].amount).toEqual(-32);
-        expect(nextPage.body.value.data[1].amount).toEqual(10);
+        // expect(nextPage.body.value.data[0].amount).toEqual(-32);
+        expect(nextPage.body.value.data[0].amount).toEqual(10);
 
         const prevPageBody = requestBody.statementsTransactionsExtended('f3f8913a-7918-e961-6d60-39dfe5e762a4', transactionDateTime,
             toDateTime, secondSeparatorByDate, 'Prev', secondSeparatorByRefIds, 5);
@@ -197,12 +189,18 @@ describe(`API > Statements`, () => {
         expect(previousPage.status).toBe(200);
         expect(previousPage.body.isSuccess).toBe(true);
         expect(previousPage.body.value.data.length).toEqual(5);
-        expect(previousPage.body.value.refIdsForReport.length).toEqual(7);
-        expect(previousPage.body.value.totalCount).toEqual(7);
+        expect(previousPage.body.value.refIdsForReport.length).toEqual(6);
+        expect(previousPage.body.value.totalCount).toEqual(6);
         expect(previousPage.body.value.prev.separatorByDateTime).toEqual(previousPage.body.value.data[0].transactionDate);
         expect(previousPage.body.value.prev.separatorByRefIds[0]).toEqual(previousPage.body.value.data[0].refId);
         expect(previousPage.body.value.next.separatorByDateTime).toEqual(firstSeparatorByDate);
         expect(previousPage.body.value.next.separatorByRefIds[0]).toEqual(firstSeparatorByRefIds);
+
+        expect(previousPage.body.value.data[0].amount).toEqual(1);
+        expect(previousPage.body.value.data[1].amount).toEqual(-1);
+        expect(previousPage.body.value.data[2].amount).toEqual(-2);
+        expect(previousPage.body.value.data[3].amount).toEqual(-31);
+        expect(previousPage.body.value.data[4].amount).toEqual(-32);
     });
 
     it(`[C38768] Statements table: Balances for selected period @smoke`, async () => {

@@ -1,7 +1,6 @@
 import { RandomGenerator } from '../core/utils/randomGenerator';
-import moment = require('moment');
+import * as moment from 'moment';
 const { v4: uuidv4 } = require('uuid');
-
 
 export const other = {
   currentDate: moment.utc().format('DD MMM YYYY'),
@@ -161,30 +160,30 @@ export const roles = {
   cardholder: 'Cardholder'
 };
 
-// QA env
-export const rolesId = {
+//QA
+let rolesId = {
   centtripAdmin: '6118f60d-b3f0-49f5-9a09-242a6a5e73b3', // Roles.value.code endpoint
   corpAdmin: '423381ba-16a4-403b-b60f-9696bb0a6f47',
   cardholder: '26cad50d-370b-4d15-9afa-b43809870a5e',
   superAdmin: 'b4e306fd-713f-4e2b-b0db-e6c919047736'
 };
 
-export const resourcesId = {
-  anderCorp: '50c82db2-7818-418a-8574-cac20cac9345', // Ander Corporate - corporateEntityCodeRefId
-  aiken: 'dd16eb6a-49ac-492d-a099-745b091eaa91' // Aiken
-
+let resourcesId = {
+  corpAdmin: '50c82db2-7818-418a-8574-cac20cac9345', // Ander Corporate - corporateEntityCodeRefId
+  //aiken: 'dd16eb6a-49ac-492d-a099-745b091eaa91' // Aiken
 };
-
-// Dev env
-// export const rolesId = {
-//   centtripAdmin: '6e519dc3-8a6e-42b1-a159-01eacc52c290',
-//   corpAdmin: '6e519dc3-8a6e-42b1-a159-01eacc52c290',
-//   cardholder: '9ed5ba40-e50c-4aa5-8f51-59baad8d8426'
-// };
-
-// export const resourcesId = {
-//   corpAdmin: '1557528e-41ae-447a-93a4-649f4363afe6'
-// };
+//DEV
+if (process.env.ENV === 'dev') {
+  rolesId = {
+    centtripAdmin: '6e519dc3-8a6e-42b1-a159-01eacc52c290',
+    corpAdmin: '6e519dc3-8a6e-42b1-a159-01eacc52c290',
+    cardholder: '9ed5ba40-e50c-4aa5-8f51-59baad8d8426',
+    superAdmin: ''
+  };
+  resourcesId = {
+    corpAdmin: '1557528e-41ae-447a-93a4-649f4363afe6'
+  };
+};
 
 export const testUsers = {
   removeRoleCenttripAdmin: 'removeusertest22092@harakirimail.com',
@@ -1415,7 +1414,7 @@ export abstract class requestBody {
   };
 
   public static updatePhoneNumber(phoneNumber: string): string {
-    console.log(JSON.stringify({ phoneNumber: phoneNumber }));
+    console.log('New phone number: ', JSON.stringify({ phoneNumber: phoneNumber }));
     return JSON.stringify(
       {
         phoneNumber: phoneNumber
@@ -1428,7 +1427,7 @@ export abstract class requestBody {
       {
         principals: [userId],
         policyCode: rolesId.corpAdmin,
-        resources: [{ type: 'Entity', value: resourcesId.anderCorp }]
+        resources: [{ type: 'Entity', value: resourcesId.corpAdmin  }]
       }
     );
   };

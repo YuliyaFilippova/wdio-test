@@ -1,7 +1,8 @@
 import {Actions} from '../../utils/actions';
-import {general,UKGeneralElements, USAMainPageElements, } from '../locators';
+import {general,signInPageElements,UKGeneralElements, UKSignUpPageElements, USAMainPageElements, } from '../locators';
 import {Other} from '../../utils/other';
 import AllureReporter from '@wdio/allure-reporter';
+import { Password } from '../../../testData/usersData';
 
 export class CommonPageUK {
 
@@ -14,18 +15,6 @@ export class CommonPageUK {
     AllureReporter.endStep();
   };
 
-//   async passFirstTimeLoginProccess(email: string, cardHolderID: string, phoneNumber: string): Promise<void> {
-//     await allureStep(`Pass First Time Login proccess for ${email} user`, async () => {
-//       await browser.get(config.params.firstTimeLoginURL);
-//       await Waiters.waitUntilElementIsDisplayed(UKPortalFirstTimeLoginPageElements.cardholderId);
-//       await Actions.sendKeys(UKPortalFirstTimeLoginPageElements.emailField, email);
-//       await Actions.sendKeys(UKPortalFirstTimeLoginPageElements.cardholderId, cardHolderID);
-//       await Actions.sendKeys(UKPortalFirstTimeLoginPageElements.mobileNumber, phoneNumber);
-//       await Actions.waitAndClick(UKPortalFirstTimeLoginPageElements.confirmButton);
-//       await Waiters.waitUntilElementIsDisplayed(UKPortalFirstTimeLoginPageElements.successMessage);
-//     });
-//   };
-
 //   async verifyUserAndSetPassword(verifyCode: string): Promise<void> {
 //     await allureStep(`Verify account and set password for new registered user`, async () => {
 //       await Waiters.waitUntilElementIsDisplayed(UKPortalFirstTimeLoginPageElements.verificationField);
@@ -35,16 +24,18 @@ export class CommonPageUK {
 //     });
 //   };
 
-//   async setPasswordForNewUser(): Promise<void> {
-//     await allureStep(`Set password for new registered user`, async () => {
-//       await Waiters.waitUntilElementIsDisplayed(UKPortalSignUpPageElements.passwordField);
-//       await Actions.sendKeys(UKPortalSignUpPageElements.passwordField, RegistrationInput.defaultUser.passField);
-//       await Actions.sendKeys(UKPortalSignUpPageElements.confirmPassField, RegistrationInput.defaultUser.passField);
-//       await Actions.waitAndClick(UKPortalSignUpPageElements.confirmButton);
-//       await Waiters.waitUntilElementIsDisplayed(signInPageElements.signInWindow);
-//     });
-//   };
-
+  async setPasswordForNewUser(): Promise<void> {
+    AllureReporter.startStep(`Set password for new registered user`);
+    await (await UKSignUpPageElements.passwordField).waitForDisplayed();
+    await (await UKSignUpPageElements.passwordField).setValue(Password);
+    AllureReporter.addStep(`Set password!`);
+    await (await UKSignUpPageElements.confirmPassField).setValue(Password);
+    AllureReporter.addStep(`Confirm password!`);
+    await (await UKSignUpPageElements.confirmButton).click();
+    AllureReporter.addStep(`New passowrd is set`);
+    await (await signInPageElements.signInWindow).waitForDisplayed();
+    AllureReporter.endStep();
+  };
 
 }
 

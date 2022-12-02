@@ -50,7 +50,6 @@ export class CreateAccountPage {
     AllureReporter.endStep();
     return randEmail;
   };
-
 }; 
 
 export const createAccountPage = new CreateAccountPage();

@@ -7,20 +7,17 @@ import { Salesforce } from '../../core/pages/externalServices/salesforce';
 import { signInPageElements, UKCardMigrationPageElements } from '../../core/pages/locators';
 import { Other } from '../../core/utils/other';
 import { userDataInDB } from '../../core/pages/userDataInDB';
-import { CredentialsIF, pathToUploadPfsCardCreation, UserIF } from '../../testData/usersData';
+import userDataIF, { Password, pathToUploadPfsCardCreation, UserIF } from '../../testData/usersData';
 import AllureReporter from '@wdio/allure-reporter';
-import { env, URLs } from '../../urls';
+import { URLs } from '../../urls';
 import { Actions } from '../../core/utils/actions';
-import { connection, connectionUSA } from '../../wdio.conf';
+import ping from '../../connections'
 
-describe(`Identity Facade >> Create UK users`, () => {
+describe(`Identity Facade >> C2 - Create UK users`, () => {
 
     before(async () => {
-        if (!connectionUSA._connectCalled) {
-            await connectionUSA.connect();
-        }
-        if (!connection._connectCalled) {
-            await connection.connect();
+        if (!ping.connection._connectCalled) {
+            await ping.connection.connect();
         }
     });
 
@@ -34,178 +31,178 @@ describe(`Identity Facade >> Create UK users`, () => {
 
     // ----------- C2.1 UK Super Admin with US country ------------------------------
 
-    // it(`[C20775] UK Super Admin with US country: AspNetUsers @smoke`, async () => {
-    //     AllureReporter.addSeverity('minor');
-    //     AllureReporter.addStory('C2.1 UK Super Admin with US country');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/20775');
-    //     console.log('C2.1 - ', await UserIF.emailSuperAdmin);
-    //     await browser.url(URLs.UKPortalURL);
-    //     await (await signInPageElements.signInWindow).waitForDisplayed();
-    //     await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
-    //     await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-    //     await createUserPageUK.createAdminUK('superAdmin', await UserIF.emailSuperAdmin, UserIF.accountUK, UserIF.superAdminUK.title,
-    //         UserIF.superAdminUK.gender, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.postalCode,
-    //         UserIF.superAdminUK.address1, UserIF.superAdminUK.address2, UserIF.superAdminUK.city, 'United States', UserIF.phoneCodeUSA,
-    //         UserIF.phoneCodeUSA, UserIF.superAdminUK.phoneNumber, UserIF.superAdminUK.homeNumber, UserIF.superAdminUK.dob);
-    //     await commonPageUK.logoutFromUK();
-    //     await userDataInDB.userExistsAspNetUsersDB(await UserIF.emailSuperAdmin, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.dobDB,
-    //         `+1${UserIF.superAdminUK.phoneNumber}`);
-    // });
+    it(`[C20775] UK Super Admin with US country: AspNetUsers @smoke`, async () => {
+        AllureReporter.addSeverity('minor');
+        AllureReporter.addStory('C2.1 UK Super Admin with US country');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/20775');
+        console.log('C2.1 - ', await UserIF.emailSuperAdmin);
+        await browser.url(URLs.UKPortalURL);
+        await (await signInPageElements.signInWindow).waitForDisplayed();
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
+        await createUserPageUK.openCreateUserPageUnderCentripAdmin();
+        await createUserPageUK.createAdminUK('superAdmin', await UserIF.emailSuperAdmin, userDataIF.accountUK, UserIF.superAdminUK.title,
+            UserIF.superAdminUK.gender, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.postalCode,
+            UserIF.superAdminUK.address1, UserIF.superAdminUK.address2, UserIF.superAdminUK.city, 'United States', UserIF.phoneCodeUSA,
+            UserIF.phoneCodeUSA, UserIF.superAdminUK.phoneNumber, UserIF.superAdminUK.homeNumber, UserIF.superAdminUK.dob);
+        await commonPageUK.logoutFromUK();
+        await userDataInDB.userExistsAspNetUsersDB(await UserIF.emailSuperAdmin, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.dobDB,
+            `+1${UserIF.superAdminUK.phoneNumber}`);
+    });
 
-    // it(`[C22070] UK Super Admin with US country: UK identity @smoke`, async () => {
-    //     AllureReporter.addSeverity('minor');
-    //     AllureReporter.addStory('C2.1 UK Super Admin with US country');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22070');
-    //     const addressArray = [UserIF.superAdminUK.address1, UserIF.superAdminUK.address2, UserIF.superAdminUK.city, 'US', UserIF.superAdminUK.postalCode];
-    //     await userDataInDB.userExistsIdentityUK(await UserIF.emailSuperAdmin, null, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.dobDB,
-    //         `+1${UserIF.superAdminUK.phoneNumber}`, null, addressArray);
-    // });
+    it(`[C22070] UK Super Admin with US country: UK identity @smoke`, async () => {
+        AllureReporter.addSeverity('minor');
+        AllureReporter.addStory('C2.1 UK Super Admin with US country');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22070');
+        const addressArray = [UserIF.superAdminUK.address1, UserIF.superAdminUK.address2, UserIF.superAdminUK.city, 'US', UserIF.superAdminUK.postalCode];
+        await userDataInDB.userExistsIdentityUK(await UserIF.emailSuperAdmin, null, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.dobDB,
+            `+1${UserIF.superAdminUK.phoneNumber}`, null, addressArray);
+    });
 
-    // it(`[C22071] UK Super Admin with US country: DynamoDb @smoke`, async () => {
-    //     AllureReporter.addSeverity('minor');
-    //     AllureReporter.addStory('C2.1 UK Super Admin with US country');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22071');
-    //     await userDataInDB.userExistsInDynamoDB(await UserIF.emailSuperAdmin, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.gender,
-    //         '2', UserIF.superAdminUK.dob, 'United States', 'US', UserIF.superAdminUK.postalCode, undefined, UserIF.superAdminUK.city, UserIF.superAdminUK.address1,
-    //         UserIF.superAdminUK.address2, undefined, undefined, `+1${UserIF.superAdminUK.homeNumber}`, `+1${UserIF.superAdminUK.phoneNumber}`);
-    // }); // SELECT * FROM Centtrip.dbo.tblEndUserTitles
+    xit(`[C22071] UK Super Admin with US country: DynamoDb @smoke`, async () => {
+        AllureReporter.addSeverity('minor');
+        AllureReporter.addStory('C2.1 UK Super Admin with US country');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22071');
+        await userDataInDB.userExistsInDynamoDB(await UserIF.emailSuperAdmin, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName, UserIF.superAdminUK.gender,
+            '2', UserIF.superAdminUK.dob, 'United States', 'US', UserIF.superAdminUK.postalCode, undefined, UserIF.superAdminUK.city, UserIF.superAdminUK.address1,
+            UserIF.superAdminUK.address2, undefined, undefined, `+1${UserIF.superAdminUK.homeNumber}`, `+1${UserIF.superAdminUK.phoneNumber}`);
+    }); // SELECT * FROM Centtrip.dbo.tblEndUserTitles
 
 
-    // it(`[C22072] UK Super Admin with US country: SalesForce @smoke`, async () => {
-    //     AllureReporter.addSeverity('minor');
-    //     AllureReporter.addStory('C2.1 UK Super Admin with US country');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22072');
-    //     const contactsData = await Salesforce.getContactsByEmail(await UserIF.emailSuperAdmin);
-    //     await Salesforce.checkContactDataInSalesforce(contactsData, await UserIF.emailSuperAdmin, salesforceData.standardRecordTypeId, UserIF.superAdminUK.firstName,
-    //         UserIF.superAdminUK.lastName, 'GBP', false, true, true);
-    // });
+    it(`[C22072] UK Super Admin with US country: SalesForce @smoke`, async () => {
+        AllureReporter.addSeverity('minor');
+        AllureReporter.addStory('C2.1 UK Super Admin with US country');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22072');
+        const contactsData = await Salesforce.getContactsByEmail(await UserIF.emailSuperAdmin);
+        await Salesforce.checkContactDataInSalesforce(contactsData, await UserIF.emailSuperAdmin, salesforceData.standardRecordTypeId, UserIF.superAdminUK.firstName,
+            UserIF.superAdminUK.lastName, 'GBP', false, true, true);
+    });
 
-    // it(`[C30436] UK Super Admin with US country: Unique Identity @smoke`, async () => {
-    //     AllureReporter.addSeverity('minor');
-    //     AllureReporter.addStory('C2.1 UK Super Admin with US country');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30436');
-    //     await userDataInDB.userExistsUniqueIdentityv2(await UserIF.emailSuperAdmin, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName,
-    //         `${UserIF.superAdminUK.firstName} ${UserIF.superAdminUK.lastName}`, UserIF.superAdminUK.dobDB,
-    //         `+1${UserIF.superAdminUK.phoneNumber}`, `+1${UserIF.superAdminUK.phoneNumber}`, UserIF.superAdminUK.address1, UserIF.superAdminUK.address2,
-    //         UserIF.superAdminUK.city, null, UserIF.superAdminUK.postalCode, UserIF.countryUSA);
-    // });
+    it(`[C30436] UK Super Admin with US country: Unique Identity @smoke`, async () => {
+        AllureReporter.addSeverity('minor');
+        AllureReporter.addStory('C2.1 UK Super Admin with US country');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30436');
+        await userDataInDB.userExistsUniqueIdentityv2(await UserIF.emailSuperAdmin, UserIF.superAdminUK.firstName, UserIF.superAdminUK.lastName,
+            `${UserIF.superAdminUK.firstName} ${UserIF.superAdminUK.lastName}`, UserIF.superAdminUK.dobDB,
+            `+1${UserIF.superAdminUK.phoneNumber}`, `+1${UserIF.superAdminUK.phoneNumber}`, UserIF.superAdminUK.address1, UserIF.superAdminUK.address2,
+            UserIF.superAdminUK.city, null, UserIF.superAdminUK.postalCode, UserIF.countryUSA);
+    });
 
     // ---------- C2.2 UK Corporate Admin under Centtrip Admin ------------------
 
-    // it(`[C22073] UK Corporate Admin under Centtrip Admin: AspNetUsers @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('C2.2 UK Corporate Admin under Centtrip Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22073');
-    //     console.log('C2.2 - ', await UserIF.emailCorporateAdmin);
-    //     await browser.url(URLs.UKPortalURL);
-    //     await (await signInPageElements.signInWindow).waitForDisplayed();
-    //     await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
-    //     await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-    //     await createUserPageUK.createAdminUK('corporateAdmin', await UserIF.emailCorporateAdmin, UserIF.accountUK, UserIF.corpAdminUK.title,
-    //         UserIF.corpAdminUK.gender, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode,
-    //         UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2, UserIF.corpAdminUK.city, 'United Kingdom',
-    //         UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
-    //         UserIF.corpAdminUK.dob);
-    //     await commonPageUK.logoutFromUK();
-    //     await userDataInDB.userExistsAspNetUsersDB(await UserIF.emailCorporateAdmin, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName,
-    //         UserIF.corpAdminUK.dobDB, `+44${UserIF.corpAdminUK.phoneNumber}`);
-    // });
+    it(`[C22073] UK Corporate Admin under Centtrip Admin: AspNetUsers @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('C2.2 UK Corporate Admin under Centtrip Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22073');
+        console.log('C2.2 - ', await UserIF.emailCorporateAdmin);
+        await browser.url(URLs.UKPortalURL);
+        await (await signInPageElements.signInWindow).waitForDisplayed();
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
+        await createUserPageUK.openCreateUserPageUnderCentripAdmin();
+        await createUserPageUK.createAdminUK('corporateAdmin', await UserIF.emailCorporateAdmin, userDataIF.accountUK, UserIF.corpAdminUK.title,
+            UserIF.corpAdminUK.gender, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.postalCode,
+            UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2, UserIF.corpAdminUK.city, UserIF.countryUK,
+            UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdminUK.phoneNumber, UserIF.corpAdminUK.homeNumber,
+            UserIF.corpAdminUK.dob);
+        await commonPageUK.logoutFromUK();
+        await userDataInDB.userExistsAspNetUsersDB(await UserIF.emailCorporateAdmin, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName,
+            UserIF.corpAdminUK.dobDB, `+44${UserIF.corpAdminUK.phoneNumber}`);
+    });
 
-    // it(`[C22074] UK Corporate Admin under Centtrip Admin: UK identity @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22074');
-    //     const addressArray = [UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2, UserIF.corpAdminUK.city, 'GB',
-    //     UserIF.corpAdminUK.postalCode];
-    //     await userDataInDB.userExistsIdentityUK(await UserIF.emailCorporateAdmin, null, UserIF.corpAdminUK.firstName,
-    //         UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.dobDB, `+44${UserIF.corpAdminUK.phoneNumber}`,
-    //         null, addressArray);
-    // });
+    it(`[C22074] UK Corporate Admin under Centtrip Admin: UK identity @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22074');
+        const addressArray = [UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2, UserIF.corpAdminUK.city, 'GB',
+        UserIF.corpAdminUK.postalCode];
+        await userDataInDB.userExistsIdentityUK(await UserIF.emailCorporateAdmin, null, UserIF.corpAdminUK.firstName,
+            UserIF.corpAdminUK.lastName, UserIF.corpAdminUK.dobDB, `+44${UserIF.corpAdminUK.phoneNumber}`,
+            null, addressArray);
+    });
 
-    // it(`[C22075] UK Corporate Admin under Centtrip Admin: DynamoDb @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22075');
-    //     await userDataInDB.userExistsInDynamoDB(await UserIF.emailCorporateAdmin, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName,
-    //         UserIF.corpAdminUK.gender, '2', UserIF.corpAdminUK.dob, 'United Kingdom', 'GB',
-    //         UserIF.corpAdminUK.postalCode, undefined, UserIF.corpAdminUK.city, UserIF.corpAdminUK.address1,
-    //         UserIF.corpAdminUK.address2, undefined, undefined, `+44${UserIF.corpAdminUK.homeNumber}`, `+44${UserIF.corpAdminUK.phoneNumber}`);
-    // });
+    xit(`[C22075] UK Corporate Admin under Centtrip Admin: DynamoDb @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22075');
+        await userDataInDB.userExistsInDynamoDB(await UserIF.emailCorporateAdmin, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName,
+            UserIF.corpAdminUK.gender, '2', UserIF.corpAdminUK.dob, UserIF.countryUK, 'GB',
+            UserIF.corpAdminUK.postalCode, undefined, UserIF.corpAdminUK.city, UserIF.corpAdminUK.address1,
+            UserIF.corpAdminUK.address2, undefined, undefined, `+44${UserIF.corpAdminUK.homeNumber}`, `+44${UserIF.corpAdminUK.phoneNumber}`);
+    });
 
-    // it(`[C22076] UK Corporate Admin under Centtrip Admin: SalesForce @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22076');
-    //     const contactsData = await Salesforce.getContactsByEmail(await UserIF.emailCorporateAdmin);
-    //     await Salesforce.checkContactDataInSalesforce(contactsData, await UserIF.emailCorporateAdmin, salesforceData.standardRecordTypeId, UserIF.corpAdminUK.firstName,
-    //         UserIF.corpAdminUK.lastName, 'GBP', false, true, false);
-    // });
+    it(`[C22076] UK Corporate Admin under Centtrip Admin: SalesForce @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22076');
+        const contactsData = await Salesforce.getContactsByEmail(await UserIF.emailCorporateAdmin);
+        await Salesforce.checkContactDataInSalesforce(contactsData, await UserIF.emailCorporateAdmin, salesforceData.standardRecordTypeId, UserIF.corpAdminUK.firstName,
+            UserIF.corpAdminUK.lastName, 'GBP', false, true, false);
+    });
 
-    // it(`[C30437] UK Corporate Admin under Centtrip Admin: Unique identity @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30437');
-    //     await userDataInDB.userExistsUniqueIdentityv2(await UserIF.emailCorporateAdmin, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName,
-    //         `${UserIF.corpAdminUK.firstName} ${UserIF.corpAdminUK.lastName}`, UserIF.corpAdminUK.dobDB,
-    //         `+44${UserIF.corpAdminUK.phoneNumber}`, `+44${UserIF.corpAdminUK.phoneNumber}`, UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2,
-    //         UserIF.corpAdminUK.city, null, UserIF.corpAdminUK.postalCode, "United Kingdom");
-    // });
+    it(`[C30437] UK Corporate Admin under Centtrip Admin: Unique identity @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('02 Corporate Admin under Centtrip Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30437');
+        await userDataInDB.userExistsUniqueIdentityv2(await UserIF.emailCorporateAdmin, UserIF.corpAdminUK.firstName, UserIF.corpAdminUK.lastName,
+            `${UserIF.corpAdminUK.firstName} ${UserIF.corpAdminUK.lastName}`, UserIF.corpAdminUK.dobDB,
+            `+44${UserIF.corpAdminUK.phoneNumber}`, `+44${UserIF.corpAdminUK.phoneNumber}`, UserIF.corpAdminUK.address1, UserIF.corpAdminUK.address2,
+            UserIF.corpAdminUK.city, null, UserIF.corpAdminUK.postalCode, UserIF.countryUK);
+    });
 
     // ------------ C2.3 UK Corporate Admin under Super Admin ----------------------
 
-    // it(`[C20826] Create Corporate Admin in UK under Super Admin: AspNetUsers @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/20826');
-    //     console.log('C2.3 - ', await UserIF.corpAdminUnderCSA.email);
-    //     await browser.url(URLs.UKPortalURL);
-    //     await (await signInPageElements.signInWindow).waitForDisplayed();
-    //     await signInPage.signInAsRegisteredUserUK(CredentialsIF.SuperAdminUK.Email, CredentialsIF.SuperAdminUK.Password);
-    //     await createUserPageUK.openCreateUserPageUnderSuperAdmin(await UserIF.corpAdminUnderCSA.email);
-    //     await createUserPageUK.createAdminUKUnderSA(UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, UserIF.corpAdminUnderCSA.postalCode,
-    //         UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2, UserIF.corpAdminUnderCSA.city, UserIF.countryUK,
-    //         UserIF.corpAdminUnderCSA.phoneNumber, UserIF.corpAdminUnderCSA.homeNumber);
-    //     await userDataInDB.userExistsAspNetUsersDB(await UserIF.corpAdminUnderCSA.email, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, UserIF.corpAdminUnderCSA.dobDB,
-    //         `+44${UserIF.corpAdminUnderCSA.phoneNumber}`);
-    //     await commonPageUK.logoutFromUK();
-    // });
+    it(`[C20826] Create Corporate Admin in UK under Super Admin: AspNetUsers @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/20826');
+        console.log('C2.3 - ', await UserIF.corpAdminUnderCSA.email);
+        await browser.url(URLs.UKPortalURL);
+        await (await signInPageElements.signInWindow).waitForDisplayed();
+        await signInPage.signInAsRegisteredUserUK(userDataIF.SuperAdminUK, Password);
+        await createUserPageUK.openCreateUserPageUnderSuperAdmin(await UserIF.corpAdminUnderCSA.email);
+        await createUserPageUK.createAdminUKUnderSA(UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, UserIF.corpAdminUnderCSA.postalCode,
+            UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2, UserIF.corpAdminUnderCSA.city, UserIF.countryUK,
+            UserIF.corpAdminUnderCSA.phoneNumber, UserIF.corpAdminUnderCSA.homeNumber);
+        await userDataInDB.userExistsAspNetUsersDB(await UserIF.corpAdminUnderCSA.email, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, UserIF.corpAdminUnderCSA.dobDB,
+            `+44${UserIF.corpAdminUnderCSA.phoneNumber}`);
+        await commonPageUK.logoutFromUK();
+    }).timeout(4000000);
 
-    // it(`[C22077] Create Corporate Admin in UK under Super Admin: UK identity @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22077');
-    //     const addressArray = [UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2, UserIF.corpAdminUnderCSA.city, 'GB', UserIF.corpAdminUnderCSA.postalCode];
-    //     await userDataInDB.userExistsIdentityUK(await UserIF.corpAdminUnderCSA.email, null, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, UserIF.corpAdminUnderCSA.dobDB,
-    //         `+44${UserIF.corpAdminUnderCSA.phoneNumber}`, null, addressArray);
-    // });
+    it(`[C22077] Create Corporate Admin in UK under Super Admin: UK identity @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22077');
+        const addressArray = [UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2, UserIF.corpAdminUnderCSA.city, 'GB', UserIF.corpAdminUnderCSA.postalCode];
+        await userDataInDB.userExistsIdentityUK(await UserIF.corpAdminUnderCSA.email, null, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, UserIF.corpAdminUnderCSA.dobDB,
+            `+44${UserIF.corpAdminUnderCSA.phoneNumber}`, null, addressArray);
+    });
 
-    // it(`[C22078] Create Corporate Admin in UK under Super Admin: DynamoDb @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22078');
-    //     await userDataInDB.userExistsInDynamoDB(await UserIF.corpAdminUnderCSA.email, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, undefined, undefined,
-    //         UserIF.corpAdminUnderCSA.dob, 'United Kingdom', 'GB', UserIF.corpAdminUnderCSA.postalCode, undefined, UserIF.corpAdminUnderCSA.city, UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2,
-    //         undefined, undefined, `+44${UserIF.corpAdminUnderCSA.homeNumber}`, `+44${UserIF.corpAdminUnderCSA.phoneNumber}`);
-    // });
+    xit(`[C22078] Create Corporate Admin in UK under Super Admin: DynamoDb @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22078');
+        await userDataInDB.userExistsInDynamoDB(await UserIF.corpAdminUnderCSA.email, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName, undefined, undefined,
+            UserIF.corpAdminUnderCSA.dob, UserIF.countryUK, 'GB', UserIF.corpAdminUnderCSA.postalCode, undefined, UserIF.corpAdminUnderCSA.city, UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2,
+            undefined, undefined, `+44${UserIF.corpAdminUnderCSA.homeNumber}`, `+44${UserIF.corpAdminUnderCSA.phoneNumber}`);
+    });
 
-    // it(`[C22076] Create Corporate Admin in UK under Centtrip Admin: SalesForce @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22076');
-    //     const contactsData = await Salesforce.getContactsByEmail(await UserIF.corpAdminUnderCSA.email);
-    //     await Salesforce.checkContactDataInSalesforce(contactsData, await UserIF.corpAdminUnderCSA.email, salesforceData.standardRecordTypeId, UserIF.corpAdminUnderCSA.firstName,
-    //         UserIF.corpAdminUnderCSA.lastName, 'GBP', false, true, false);
-    // });
+    it(`[C22079] Create Corporate Admin in UK under Super Admin: SalesForce @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22079');
+        const contactsData = await Salesforce.getContactsByEmail(await UserIF.corpAdminUnderCSA.email);
+        await Salesforce.checkContactDataInSalesforce(contactsData, await UserIF.corpAdminUnderCSA.email, salesforceData.standardRecordTypeId, UserIF.corpAdminUnderCSA.firstName,
+            UserIF.corpAdminUnderCSA.lastName, 'GBP', false, true, false);
+    });
 
-    // it(`[C30438] Create Corporate Admin in UK under Super Admin: Unique identity @smoke`, async () => {
-    //     AllureReporter.addSeverity('normal');
-    //     AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
-    //     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30438');
-    //     await userDataInDB.userExistsUniqueIdentityv2(await UserIF.corpAdminUnderCSA.email, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName,
-    //         `${UserIF.corpAdminUnderCSA.firstName} ${UserIF.corpAdminUnderCSA.lastName}`, UserIF.corpAdminUnderCSA.dobDB,
-    //         `+44${UserIF.corpAdminUnderCSA.phoneNumber}`, `+44${UserIF.corpAdminUnderCSA.phoneNumber}`, UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2,
-    //         UserIF.corpAdminUnderCSA.city, null, UserIF.corpAdminUnderCSA.postalCode, UserIF.countryUK);
-    // });
+    it(`[C30438] Create Corporate Admin in UK under Super Admin: Unique identity @smoke`, async () => {
+        AllureReporter.addSeverity('normal');
+        AllureReporter.addStory('C2.3 UK Corporate Admin under Super Admin');
+        AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30438');
+        await userDataInDB.userExistsUniqueIdentityv2(await UserIF.corpAdminUnderCSA.email, UserIF.corpAdminUnderCSA.firstName, UserIF.corpAdminUnderCSA.lastName,
+            `${UserIF.corpAdminUnderCSA.firstName} ${UserIF.corpAdminUnderCSA.lastName}`, UserIF.corpAdminUnderCSA.dobDB,
+            `+44${UserIF.corpAdminUnderCSA.phoneNumber}`, `+44${UserIF.corpAdminUnderCSA.phoneNumber}`, UserIF.corpAdminUnderCSA.address1, UserIF.corpAdminUnderCSA.address2,
+            UserIF.corpAdminUnderCSA.city, null, UserIF.corpAdminUnderCSA.postalCode, UserIF.countryUK);
+    });
 
     // ------------- C2.5 UK Cardholder -------------------------------
 
@@ -214,11 +211,11 @@ describe(`Identity Facade >> Create UK users`, () => {
         AllureReporter.addStory('C2.5 UK Cardholder');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/20780');
         console.log('C2.5 - ', await UserIF.emailCardholder);
-        const fileName = await cardMigrationPage.generateBatchFile(await UserIF.emailCardholder, env);
+        const fileName = await cardMigrationPage.generateBatchFile(await UserIF.emailCardholder, process.env.env);
         await Other.deleteCacheCookiesUK();
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -247,7 +244,7 @@ describe(`Identity Facade >> Create UK users`, () => {
         await userDataInDB.userExistInMSSQLDB(await UserIF.emailCardholder);
     });
 
-    it(`[C22117] UK Cardholder: DynamoDb @smoke`, async () => {
+    xit(`[C22117] UK Cardholder: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('C2.5 UK Cardholder');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/22117');
@@ -287,17 +284,17 @@ describe(`Identity Facade >> Create UK users`, () => {
         console.log('C2.6 - ', await UserIF.corpAdmin2_6.email);
         await browser.url(URLs.UKPortalURL);
         await (await signInPageElements.signInWindow).waitForDisplayed();
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCreateUserPageUnderCentripAdmin();
-        await createUserPageUK.createAdminUK('corporateAdmin', await UserIF.corpAdmin2_6.email, UserIF.accountUK, UserIF.corpAdmin2_6.title,
+        await createUserPageUK.createAdminUK('corporateAdmin', await UserIF.corpAdmin2_6.email, userDataIF.accountUK, UserIF.corpAdmin2_6.title,
             UserIF.corpAdmin2_6.gender, UserIF.corpAdmin2_6.firstName, UserIF.corpAdmin2_6.lastName, UserIF.corpAdmin2_6.postalCode, UserIF.corpAdmin2_6.address1,
             UserIF.corpAdmin2_6.address2, UserIF.corpAdmin2_6.city, UserIF.countryUK, UserIF.phoneCodeUK, UserIF.phoneCodeUK, UserIF.corpAdmin2_6.phoneNumber,
             UserIF.corpAdmin2_6.homeNumber, UserIF.corpAdmin2_6.dob);
         await commonPageUK.logoutFromUK();
         // Create Cardholder UK 
-        const fileName = await cardMigrationPage.generateBatchFile(await UserIF.corpAdmin2_6.email, env);
+        const fileName = await cardMigrationPage.generateBatchFile(await UserIF.corpAdmin2_6.email, process.env.env);
         await browser.url(URLs.UKPortalURL);
-        await signInPage.signInAsRegisteredUserUK(CredentialsIF.CenttripAdminiUK.Email, CredentialsIF.CenttripAdminiUK.Password);
+        await signInPage.signInAsRegisteredUserUK(userDataIF.CenttripAdminiUK, Password);
         await createUserPageUK.openCardMigrationPage();
         await Actions.uploadFile(`${pathToUploadPfsCardCreation}${fileName}.xlsx`, await UKCardMigrationPageElements.chooseButton);
         await browser.pause(2000);
@@ -326,12 +323,12 @@ describe(`Identity Facade >> Create UK users`, () => {
         await userDataInDB.userExistInMSSQLDB(await UserIF.corpAdmin2_6.email);
     });
 
-    it(`[C37787] UK Corporate Admin > UK Cardholder: DynamoDb @smoke`, async () => {
+    xit(`[C37787] UK Corporate Admin > UK Cardholder: DynamoDb @smoke`, async () => {
         AllureReporter.addSeverity('normal');
         AllureReporter.addStory('C2.6 UK Corporate Admin > UK Cardholder');
         AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/37787');
         await userDataInDB.userExistsInDynamoDB(await UserIF.corpAdmin2_6.email, UserIF.corpAdmin2_6.firstName, UserIF.corpAdmin2_6.lastName, UserIF.corpAdmin2_6.gender, '2',
-            UserIF.corpAdmin2_6.dob, 'United Kingdom', 'GB', UserIF.corpAdmin2_6.postalCode, undefined, UserIF.corpAdmin2_6.city,
+            UserIF.corpAdmin2_6.dob, UserIF.countryUK, 'GB', UserIF.corpAdmin2_6.postalCode, undefined, UserIF.corpAdmin2_6.city,
             UserIF.corpAdmin2_6.address1, UserIF.corpAdmin2_6.address2, undefined, undefined, `+44${UserIF.corpAdmin2_6.phoneNumber}`, `+44${UserIF.corpAdmin2_6.phoneNumber}`);
     });
 

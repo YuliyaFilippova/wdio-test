@@ -4,15 +4,15 @@ import { createUserPage } from '../../core/pages/centtripUSA/createUser';
 import { salesforceData } from '../../testData/other';
 import { Salesforce } from '../../core/pages/externalServices/salesforce';
 import AllureReporter from '@wdio/allure-reporter';
-import { connectionUSA } from '../../wdio.conf';
 import { userDataInDB } from '../../core/pages/userDataInDB';
-import { CredentialsIF, UserIF } from '../../testData/usersData';
+import userDataIF, { Password, UserIF } from '../../testData/usersData';
+import ping from '../../connections';
 
-describe(`Identity Facade >> Update USA users`, () => {
+describe(`Identity Facade >> U1 - Update USA users`, () => {
 
   before(async () => {
-    if (!connectionUSA._connectCalled) {
-      await connectionUSA.connect();
+    if (!ping.connectionUSA._connectCalled) {
+      await ping.connectionUSA.connect();
     }
   });
 
@@ -30,7 +30,7 @@ describe(`Identity Facade >> Update USA users`, () => {
     AllureReporter.addStory('U1.1 US Corporate Admin - Edit UStoUK country');
     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/17702');
     console.log('U1.1 - ', await UserIF.emailUpdateCorpAdminAll);
-    const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+    const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
     await createUserPage.createUserFullAPI(await UserIF.emailUpdateCorpAdminAll, token, 'CorporateAdmin',
       UserIF.corpAdminAllFields.firstName, UserIF.corpAdminAllFields.lastName, UserIF.corpAdminAllFields.dob,
       UserIF.corpAdminAllFields.gender, `+1${UserIF.corpAdminAllFields.phoneNumber}`, UserIF.corpAdminAllFields.street,
@@ -78,7 +78,7 @@ describe(`Identity Facade >> Update USA users`, () => {
     AllureReporter.addStory('U1.2 US Corporate Admin - Remove address');
     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/19601');
     console.log('U1.2 - ', await UserIF.emailUpdateCorpAdminAll2);
-    const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+    const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
     await createUserPage.createUserFullAPI(await UserIF.emailUpdateCorpAdminAll2, token, 'CorporateAdmin',
       UserIF.corpAdminAllFields.firstName, UserIF.corpAdminAllFields.lastName, UserIF.corpAdminAllFields.dob,
       UserIF.corpAdminAllFields.gender, `+1${UserIF.corpAdminAllFields.phoneNumber}`, UserIF.corpAdminAllFields.street,
@@ -126,7 +126,7 @@ describe(`Identity Facade >> Update USA users`, () => {
     AllureReporter.addStory('U1.3 US Corporate Admin - Add address');
     AllureReporter.addTestId('https://centtrip.testrail.io/index.php?/cases/view/30468');
     console.log('U1.3 - ', await UserIF.emailUpdateCorpAdminRequired);
-    const token = await LoginAPICall.getAccessTokenForAPI(CredentialsIF.CenttripAdminUSA.Email, CredentialsIF.CenttripAdminUSA.Password);
+    const token = await LoginAPICall.getAccessTokenForAPI(userDataIF.CenttripAdminUSA, Password);
     await createUserPage.createUserRequiredFieldsAPI(await UserIF.emailUpdateCorpAdminRequired, token, 'CorporateAdmin',
       UserIF.corpAdminOnlyRequiredFields.firstName, UserIF.corpAdminOnlyRequiredFields.lastName, UserIF.corpAdminOnlyRequiredFields.dob,
       `+1${UserIF.corpAdminAllFields.phoneNumber}`);

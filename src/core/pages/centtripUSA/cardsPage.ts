@@ -4,11 +4,14 @@ import { DBQueries } from '../../../testData/DBQueries';
 import AllureReporter from '@wdio/allure-reporter';
 import {
   general, USAManageCardsPageElements, USAExpensesPageElements,
-  USAMainPageElements, USATransactionsPageElements
+  USAMainPageElements, USATransactionsPageElements,
+  statementsPageElements
 } from '../locators';
 import { Actions } from '../../utils/actions';
+import { getExternalIdByCode } from '../../../testData/other';
 import { Button } from '../../controls/button';
 import { downloadsExpPath } from '../../../testData/usersData';
+import { Other } from '../../utils/other';
 
 const XLSX = require('xlsx');
 
@@ -262,6 +265,100 @@ export class CardsPage {
     expect(mccUI).toBe(mcc);
     AllureReporter.endStep();
   };
-}; 
+
+  async generateXlsxFileWithNewCard(corporateName: string, firstEmbossName: string, secondEmbossName: string,
+    csaEmail: string, ownEmail: string, filename: string): Promise<void> {
+    AllureReporter.startStep('Generate .xlsx file with CardData for Batch card upload process');
+    const data = [];
+    data.push(['Corporate name', 'First Name', 'Last Name', 'Emboss Name', 'Email', 'Birth Date. Day (DD)', 'Birth Date. Month (MM)',
+      'Birth Date. Year (YYYY)', 'Mobile Phone Code (for example, enter 1 for USA)', 'Mobile Phone Number', 'Shared balance (Yes/No)']);
+    data.push([corporateName, 'FirstCSA', 'User', firstEmbossName, csaEmail, '1', '1', '1980', '1', '8322958840', 'Yes']);
+    data.push([corporateName, 'FirstOwn', 'Card', secondEmbossName, ownEmail, '1', '1', '1980', '44', '7360529314', 'No']);
+    const book = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(book, sheet, 'sheet1');
+    XLSX.writeFile(book, `${downloadsExpPath}/${filename}.xlsx`);
+    AllureReporter.endStep();
+  };
+
+  async checkingUIBalanceTransactionData(rowNumber: number, creationDate: string, type: string, ccy: string, amount: number,
+    status: string, balanceAfter: number, details: string, cardHolder: string, recipient: string): Promise<void> {
+    AllureReporter.startStep('Check that balance transaction data which was sent by API call are matched with data from UI');
+    const dateUI = await statementsPageElements.transactions.dateOfSelectedTransactionRow(rowNumber).getText();
+    const typeUI = await statementsPageElements.transactions.typeOfSelectedTransactionRow(rowNumber).getText();
+    const ccyUI = await statementsPageElements.transactions.ccyOfSelectedTransactionRow(rowNumber).getText();
+    const amountUI = await statementsPageElements.transactions.amountOfSelectedTransactionRow(rowNumber).getText();
+    const statusUI = await statementsPageElements.transactions.statusOfSelectedTransactionRow(rowNumber).getAttribute('data-mat-icon-name');
+    const balanceAfterUI = await statementsPageElements.transactions.balanceAfterOfSelectedTransactionRow(rowNumber).getText();
+    const detailsUI = await statementsPageElements.transactions.detailsAfterOfSelectedTransactionRow(rowNumber).getText();
+    const cardHolderUI = await statementsPageElements.transactions.carholderOfSelectedTransactionRow(rowNumber).getText();
+    const recipientUI = await statementsPageElements.transactions.recipientOfSelectedTransactionRow(rowNumber).getText();
+
+    expect(dateUI).toBe(creationDate);
+    expect(typeUI).toBe(type);
+    expect(ccyUI).toBe(ccy);
+    expect(Number(amountUI)).toBe(amount);
+    expect(statusUI).toBe(status);
+    expect(Other.parseLocaleNumber(balanceAfterUI, 'en-GB')).toBe(balanceAfter);
+    expect(cardHolderUI).toBe(cardHolder);
+    expect(recipientUI).toBe(recipient);
+    expect(detailsUI).toBe(details);
+    AllureReporter.endStep();
+  };
+
+  async getCardCodeRefIdFromDB(cardHolderName: string): Promise<string> {
+    let codeRefId: string;
+    return new Promise((resolve, reject) => {
+      connectionUSA.query(DBQueries.getCardCodeRefIdQuery(cardHolderName), function (err, rows) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          Object.keys(rows).forEach(function (keyItem) {
+            const row = rows[keyItem];
+            codeRefId = row.Value;
+            resolve(codeRefId);
+          });
+        }
+      });
+    });
+  };
+
+  async getAdyenCardTransactionRuleIdFromDB(codeRefId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      connectionUSA.query(DBQueries.getAdyenCardTransactionRuleIdQuery(codeRefId), function (err, rows) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          resolve(rows[0].ExternalId);
+        }
+      });
+    });
+  };
+
+  async getAdyenCardTransactionRulesIdFromDB(codeRefIdDailySpend: string, codeRefIdMonthlySpend: string, codeRefIdTransactionAmount: string, codeRefIdLimitPerDay: string,
+    codeRefIdLimitPerMonth: string): Promise<any> {
+    const adyenCardTransactionRulesIdData = [];
+    return new Promise((resolve, reject) => {
+      connectionUSA.query(DBQueries.getAdyenCardTransactionRulesIdQuery(codeRefIdDailySpend, codeRefIdMonthlySpend,
+        codeRefIdTransactionAmount, codeRefIdLimitPerDay, codeRefIdLimitPerMonth), function (err, rows) {
+          if (err) {
+            console.log(err);
+            reject(err);
+          } else {
+            expect(rows.length).toEqual(5);
+            const adyenDailySpendId = getExternalIdByCode(rows, codeRefIdDailySpend);
+            const adyenMonthlySpendId = getExternalIdByCode(rows, codeRefIdMonthlySpend);
+            const adyenTransactionAmountId = getExternalIdByCode(rows, codeRefIdTransactionAmount);
+            const adyenLimitPerDayId = getExternalIdByCode(rows, codeRefIdLimitPerDay);
+            const adyenLimitPerMonthId = getExternalIdByCode(rows, codeRefIdLimitPerMonth);
+            adyenCardTransactionRulesIdData.push(adyenDailySpendId, adyenMonthlySpendId, adyenTransactionAmountId, adyenLimitPerDayId, adyenLimitPerMonthId);
+            resolve(adyenCardTransactionRulesIdData);
+          }
+        });
+    });
+  };
+};
 
 export const cardsPage = new CardsPage();
