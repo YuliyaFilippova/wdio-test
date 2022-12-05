@@ -6,9 +6,9 @@ pipeline {
     }
     stages {
         stage('Delete old data') {     
-            agent {label 'master' }
+            agent {label 'master'}
             steps {
-                bat 'rm -rf $WORKSPACE/allure-results'
+                sh 'rm -rf $WORKSPACE/allure-results'
             }
         }
 
@@ -20,12 +20,12 @@ pipeline {
             } 
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    bat 'npm install'
-                    bat 'rm -rf allure-results/*'
-                    bat 'npm run clean'
+                    sh 'npm install'
+                    sh 'rm -rf allure-results/*'
+                    sh 'npm run clean'
                     script{
                         try {
-                            bat "ENV=qa npm run iFacade"
+                            sh "ENV=qa npm run iFacade"
                         } catch (error) {
                             throw error
                         } finally {
@@ -37,7 +37,7 @@ pipeline {
         }
 
         stage('Build report') {
-            agent {label 'master' }
+            agent {label 'master'}
             steps {
                 unstash 'allure-results'
                 script {
