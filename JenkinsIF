@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
     environment {
         HOME = "$WORKSPACE"
         DEFAULT_JVM_OPTS = '-Xmx1G'
