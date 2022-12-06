@@ -1,12 +1,12 @@
 pipeline {
     agent none
     environment {
-        HOME = '$WORKSPACE'
+        HOME = "$WORKSPACE"
         DEFAULT_JVM_OPTS = '-Xmx1G'
     }
     stages {
         stage('Delete old data') {     
-            agent {label 'master'}
+            agent {label "master"}
             steps {
                 echo 'Hello world'
             }
@@ -20,9 +20,9 @@ pipeline {
             } 
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh 'npm install'
-                    sh 'rm -rf allure-results/*'
-                    sh 'npm run clean'
+                    sh "npm install"
+                    sh "rm -rf allure-results/*"
+                    sh "npm run clean'
                     script{
                         try {
                             sh "ENV=qa npm run iFacade"
