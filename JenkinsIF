@@ -1,12 +1,12 @@
 pipeline {
-    agent none
+    agent any
     environment {
         HOME = "$WORKSPACE"
         DEFAULT_JVM_OPTS = '-Xmx1G'
     }
     stages {
         stage('Delete old data') {     
-            agent {label "master"}
+            agent("master")
             steps {
                 echo 'Hello world'
             }
