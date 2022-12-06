@@ -6,7 +6,9 @@ pipeline {
     }
     stages {
         stage('Delete old data') {     
-            agent("master")
+            agent {
+                label "master"
+            }
             steps {
                 echo 'Hello world'
             }
