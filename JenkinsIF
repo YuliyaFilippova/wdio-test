@@ -6,11 +6,9 @@ pipeline {
     }
     stages {
         stage('Delete old data') {     
-            agent {
-                label "master"
-            }
+            agent {label 'master' }
             steps {
-                echo 'Hello world'
+                sh 'rm -rf $WORKSPACE/allure-results'
             }
         }
 
