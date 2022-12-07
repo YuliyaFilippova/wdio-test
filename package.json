@@ -26,6 +26,7 @@
     "wdio-chromedriver-service": "^8.0.0",
     "wdio-geckodriver-service": "^4.0.0",
     "wdio-wait-for": "^2.2.6", 
+    "wdio-wdiov5testrail-reporter": "^1.0.35"
   },
   "dependencies": {
     "@wdio/codemod": "^0.12.0",
