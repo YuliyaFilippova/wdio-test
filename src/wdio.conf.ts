@@ -13,11 +13,6 @@ if (!process.env.SUITEID || !['182', '364'].includes(process.env.SUITEID)) {
     process.exit()
 }
 
-if (!process.env.RUNID) {
-    console.log('Please use the following format: RUNID=""|TestrailRunId')
-    process.exit()
-}
-
 export const config: Options.Testrunner = {
 
     autoCompileOpts: {
