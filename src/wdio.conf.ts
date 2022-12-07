@@ -8,11 +8,6 @@ if (!process.env.ENV || !['qa', 'dev'].includes(process.env.ENV)) {
     process.exit()
 }
 
-if (!process.env.SUITEID || !['182', '364'].includes(process.env.SUITEID)) {
-    console.log('Please use the following format: SUITEID=182|364')
-    process.exit()
-}
-
 export const config: Options.Testrunner = {
 
     autoCompileOpts: {
@@ -93,7 +88,7 @@ export const config: Options.Testrunner = {
             username: 'y.philippova@andersenlab.com',
             password: 'TestRail2@',
             projectId: 2,
-            suiteId: process.env.SUITEID, 
+            suiteId: 364, 
             runId: process.env.RUNID
           }],
     ],
