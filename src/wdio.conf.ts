@@ -1,8 +1,20 @@
 import AllureReporter from '@wdio/allure-reporter';
 import type { Options } from '@wdio/types';
 
+const testrailUtil = require('wdio-wdiov5testrail-reporter/lib');
+
 if (!process.env.ENV || !['qa', 'dev'].includes(process.env.ENV)) {
     console.log('Please use the following format: ENV=qa|dev')
+    process.exit()
+}
+
+if (!process.env.SUITEID || !['182', '364'].includes(process.env.SUITEID)) {
+    console.log('Please use the following format: SUITEID=182|364')
+    process.exit()
+}
+
+if (!process.env.RUNID) {
+    console.log('Please use the following format: RUNID=""|TestrailRunId')
     process.exit()
 }
 
@@ -79,14 +91,31 @@ export const config: Options.Testrunner = {
                     await browser.takeScreenshot();
                 }
             }
-        }]
+        }], 
+        ['wdiov5testrail', {
+            outputDir: './',
+            domain: 'centtrip.testrail.io',
+            username: 'y.philippova@andersenlab.com',
+            password: 'TestRail2@',
+            projectId: 2,
+            suiteId: process.env.SUITEID, 
+            runId: process.env.RUNID
+          }],
     ],
     mochaOpts: {
         ui: 'bdd',
         timeout: 60000
     },
 
-    after: async () => {
+    beforeSession: function (config, capabilities, specs) {
+        testrailUtil.startup();
+    },
+
+    onComplete: function (exitCode, conf, capabilities, results) {
+        testrailUtil.cleanup(conf); // This method returns the run id used
+    },
+
+    after: () => {
         AllureReporter.addEnvironment('Environment', process.env.ENV);
         AllureReporter.addEnvironment('Platform', process.platform);
     },

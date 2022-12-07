@@ -6,7 +6,7 @@ pipeline {
     }
     stages {
         stage('Delete old data') {     
-            agent {label 'master' }
+            agent { label 'master' }
             steps {
                 sh 'rm -rf $WORKSPACE/allure-results' 
             }
@@ -25,7 +25,7 @@ pipeline {
                     sh "npm run clean"
                     script{
                         try {
-                            sh "ENV=qa npm run iFacade"
+                            sh "ENV=${params.Environment} SUITEID=${params.SuiteId} RUNID=${params.RunId} npm run iFacade"
                         } catch (error) {
                             throw error
                         } finally {
@@ -37,7 +37,7 @@ pipeline {
         }
 
         stage('Build report') {
-            agent {label 'master'}
+            agent { label 'master'}
             steps {
                 unstash 'allure-results'
                 script {
