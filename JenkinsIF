@@ -25,7 +25,7 @@ pipeline {
                     sh "npm run clean"
                     script{
                         try {
-                            sh "ENV=${params.Environment} SUITEID=${params.SuiteId} RUNID=${params.RunId} npm run iFacade"
+                            sh "ENV=${params.Environment} RUNID=${params.RunId} npm run iFacade"
                         } catch (error) {
                             throw error
                         } finally {
